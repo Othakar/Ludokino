@@ -27,9 +27,14 @@
 
 # Local agent and workspace tooling
 .agents/
-.github/
 _bmad/
 _bmad-output/
+
+# GitHub repository configuration is versioned
+!.github/
+!.github/**
+!.github/**/*.md
+.github/agents/
 
 # EF Core temporary scripts
 **/migration-*.sql
