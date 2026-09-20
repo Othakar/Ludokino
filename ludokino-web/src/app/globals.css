@@ -336,6 +336,14 @@ p {
   gap: 24px;
 }
 
+.shows-empty {
+  padding: 24px;
+  color: var(--cyan);
+  text-align: center;
+  background: rgba(42, 52, 84, 0.72);
+  border: 2px dashed var(--border);
+}
+
 .show-card {
   display: grid;
   grid-template-columns: 118px minmax(0, 1fr);

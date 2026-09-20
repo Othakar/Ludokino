@@ -1,10 +1,10 @@
-# API Ludokino
+# Ludokino.Api
 
-API REST du site Ludokino, construite avec ASP.NET Core 8, Entity Framework Core et PostgreSQL.
+API REST ASP.NET Core 8 avec Entity Framework Core, PostgreSQL, JWT et Swagger.
 
 ## Configuration locale
 
-Créer `appsettings.Development.json` à côté du fichier projet :
+Créer `appsettings.Development.json` à côté de `Ludokino.Api.csproj` :
 
 ```json
 {
@@ -19,45 +19,61 @@ Créer `appsettings.Development.json` à côté du fichier projet :
 }
 ```
 
-En développement, le frontend `http://localhost:3000` est autorisé par défaut via CORS. En production, définir explicitement les origines :
+En développement, CORS autorise `http://localhost:3000`. En production, déclarer les origines avec :
 
 ```text
-Cors__AllowedOrigins__0=https://www.exemple.fr
+Cors__AllowedOrigins__0=https://exemple.fr
 Cors__AllowedOrigins__1=https://admin.exemple.fr
 ```
 
-La production doit fournir la chaîne PostgreSQL uniquement via `ConnectionStrings__DefaultConnection`.
-
 ## Base de données
 
-L'API applique automatiquement les migrations EF Core au démarrage, puis exécute le seed initial. La base `ludokino` doit être accessible avec l'utilisateur configuré.
+Au démarrage, l'API :
 
-Appliquer les migrations manuellement :
+1. applique les migrations présentes dans `Migrations/`;
+2. crée le schéma si nécessaire;
+3. exécute le seed initial des rôles et utilisateurs.
+
+Commandes EF Core :
 
 ```powershell
 dotnet ef database update --project Ludokino.Api.csproj
+dotnet ef migrations list --project Ludokino.Api.csproj
+dotnet ef migrations add NomDeMigration --project Ludokino.Api.csproj --output-dir Migrations
 ```
 
-Créer une migration après une modification du modèle :
+La base de test doit être séparée de `ludokino`.
 
-```powershell
-dotnet ef migrations add NomDeLaMigration --project Ludokino.Api.csproj --output-dir Migrations
-```
+## Démarrage
 
-## Lancement
-
-Depuis la racine du dépôt :
+Depuis la racine :
 
 ```powershell
 dotnet run --project Ludokino.Api/Ludokino.Api.csproj
 ```
 
-Swagger est disponible sur `/swagger` en environnement de développement.
+Swagger est disponible sur `<url-api>/swagger` en environnement Development.
 
-## Fonctionnalités
+## Services et routes
 
-- Authentification JWT pour `Admin` et `Redacteur`.
-- Articles, brouillons, publication, auteurs multiples, catégories, tags et émissions.
-- Émissions vidéo avec lien YouTube HTTPS obligatoire.
-- Équipe publique et endpoints d'administration protégés par rôle.
-- Headers HTTP de sécurité et politique CORS explicite.
+- Authentification : `/api/Auth`
+- Articles : `/api/Articles`
+- Catégories : `/api/Categories`
+- Tags : `/api/Tags`
+- Émissions : `/api/Emissions`
+- Équipe : `/api/Team`
+- Statistiques : `/api/Dashboard`
+
+Les routes d'administration utilisent les rôles JWT `Admin` et `Redacteur`. Les suppressions sont réservées à `Admin`.
+
+## Production
+
+Ne jamais stocker de mot de passe, clé JWT ou clé d'API dans le dépôt. Utiliser les variables d'environnement ASP.NET Core, notamment :
+
+```text
+ConnectionStrings__DefaultConnection
+JwtSettings__SecretKey
+JwtSettings__Issuer
+JwtSettings__Audience
+Cors__AllowedOrigins__0
+```
