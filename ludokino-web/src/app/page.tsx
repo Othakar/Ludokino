@@ -85,13 +85,24 @@ function BrandIcon({ icon, size = 22 }: { icon: BrandIconData; size?: number }) 
   );
 }
 
+export function isSafeYoutubeUrl(value: unknown): value is string {
+  if (typeof value !== "string") return false;
+
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && ["youtube.com", "www.youtube.com", "youtu.be"].includes(url.hostname);
+  } catch {
+    return false;
+  }
+}
+
 function Window({ title, children, accent = false, Icon = Monitor }: { title: string; children: React.ReactNode; accent?: boolean; Icon?: LucideIcon }) {
   return (
     <section className={`window ${accent ? "info-window" : ""}`}>
       <div className="window-header">
         <span className="window-title pixel-font"><Icon size={19} strokeWidth={2.2} aria-hidden="true" />{title}</span>
         <span className="window-controls">
-          <button className="window-control close" type="button" aria-label={`Fermer ${title}`}>×</button>
+          <span className="window-control close" aria-hidden="true">×</span>
         </span>
       </div>
       <div className="window-body">{children}</div>
@@ -110,15 +121,15 @@ export function Navigation({ activeHref = "/" }: { activeHref?: string }) {
 
   return (
     <nav className="site-nav" aria-label="Navigation principale">
-      <a className="brand" href="#" aria-label="Ludokino, accueil">
+      <Link className="brand" href="/" aria-label="Ludokino, accueil">
         <Image src="/img/LDKN.svg" alt="LUDOKINO" width={100} height={34} priority />
-      </a>
+      </Link>
       <div className="nav-links">
         {links.map(([label, href, Icon]) => (
-          <a className={`nav-link pixel-font ${href === activeHref ? "active" : ""}`} href={href} key={label}>
+          <Link className={`nav-link pixel-font ${href === activeHref ? "active" : ""}`} href={href} key={label}>
             <Icon size={20} aria-hidden="true" />
             <span>{label}</span>
-          </a>
+          </Link>
         ))}
       </div>
       <div className="social-links" aria-label="Réseaux sociaux">

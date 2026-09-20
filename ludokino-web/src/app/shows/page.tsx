@@ -1,5 +1,5 @@
 import { ExternalLink, Monitor, PlayCircle } from "lucide-react";
-import { Footer, Navigation } from "../page";
+import { Footer, isSafeYoutubeUrl, Navigation } from "../page";
 
 const fallbackShows = [
   { id: 1, name: "Monthly Wave", slug: "monthly-wave", description: "L'émission musicale mensuelle qui explore les pépites sonores et les classiques oubliés.", type: "Musique", youtubeUrl: "https://www.youtube.com/playlist?list=PL13-SWMvlfix9XYhGjoKQdoL0Je81qD3l", imageUrl: null },
@@ -24,12 +24,17 @@ function isEmission(value: unknown): value is Emission {
     typeof emission.id === "number" &&
     typeof emission.name === "string" &&
     typeof emission.description === "string" &&
-    typeof emission.youtubeUrl === "string"
+    typeof emission.type === "string" &&
+    isSafeYoutubeUrl(emission.youtubeUrl) &&
+    (emission.imageUrl === null || typeof emission.imageUrl === "string")
   );
 }
 
 async function getEmissions(): Promise<Emission[]> {
-  const apiUrl = process.env.API_URL ?? "http://localhost:5000";
+  const apiUrl = process.env.API_URL;
+  const fallback = process.env.NODE_ENV === "development" ? fallbackShows : [];
+  if (!apiUrl) return fallback;
+
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 2500);
 
@@ -38,15 +43,15 @@ async function getEmissions(): Promise<Emission[]> {
       next: { revalidate: 60 },
       signal: controller.signal,
     });
-    if (!response.ok) return fallbackShows;
+    if (!response.ok) return fallback;
 
     const data: unknown = await response.json();
-    if (!Array.isArray(data)) return fallbackShows;
+    if (!Array.isArray(data)) return fallback;
 
     const emissions = data.filter(isEmission);
-    return emissions.length > 0 ? emissions : fallbackShows;
+    return emissions.length > 0 ? emissions : [];
   } catch {
-    return fallbackShows;
+    return fallback;
   } finally {
     clearTimeout(timeout);
   }
@@ -57,7 +62,7 @@ function Window({ title, children }: { title: string; children: React.ReactNode 
     <section className="window">
       <div className="window-header">
         <span className="window-title pixel-font"><Monitor size={19} aria-hidden="true" />{title}</span>
-        <span className="window-controls"><button className="window-control close" type="button" aria-label={`Fermer ${title}`}>×</button></span>
+        <span className="window-controls"><span className="window-control close" aria-hidden="true">×</span></span>
       </div>
       <div className="window-body">{children}</div>
     </section>
@@ -85,7 +90,7 @@ export default async function ShowsPage() {
                 <div className="show-thumb">
                   {emission.imageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={emission.imageUrl} alt="" />
+                    <img src={emission.imageUrl} alt={`Miniature de ${emission.name}`} />
                   ) : <PlayCircle size={46} aria-hidden="true" />}
                 </div>
                 <div className="show-card-content">
@@ -100,6 +105,9 @@ export default async function ShowsPage() {
             </Window>
           ))}
         </div>
+        {emissions.length === 0 && (
+          <p className="shows-empty">Aucune émission n&apos;est disponible pour le moment.</p>
+        )}
         <Window title="OMNIBUS : LA DÉFINITION">
           <div className="omnibus-definition">
             <h2 className="shows-heading pixel-font">QU&apos;EST-CE QU&apos;UN OMNIBUS ?</h2>

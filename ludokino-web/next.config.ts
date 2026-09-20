@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   async headers() {
+    const scriptSource = process.env.NODE_ENV === "production"
+      ? "'self'"
+      : "'self' 'unsafe-inline' 'unsafe-eval'";
     const securityHeaders = [
       { key: "X-Content-Type-Options", value: "nosniff" },
       { key: "X-Frame-Options", value: "DENY" },
@@ -18,10 +21,10 @@ const nextConfig: NextConfig = {
           "object-src 'none'",
           "frame-ancestors 'none'",
           "form-action 'self'",
-          "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+          `script-src ${scriptSource}`,
           "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
           "font-src 'self' https://fonts.gstatic.com",
-          "img-src 'self' data: blob: https:",
+          "img-src 'self' data: blob: https://i.ytimg.com https://img.youtube.com",
           "frame-src https://www.youtube-nocookie.com",
           "connect-src 'self' https://public.api.bsky.app",
         ].join("; "),
