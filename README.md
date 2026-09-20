@@ -78,9 +78,11 @@ JwtSettings__Issuer
 JwtSettings__Audience
 Cors__AllowedOrigins__0
 API_URL
+Youtube__ApiKey
+Youtube__SyncIntervalMinutes
 ```
 
-La clé YouTube, lorsqu'elle sera activée côté API, devra également rester dans une variable d'environnement et ne jamais être exposée au frontend.
+La synchronisation YouTube est exécutée côté API uniquement. La clé API ne doit jamais être exposée au frontend.
 
 ## Vérification locale
 

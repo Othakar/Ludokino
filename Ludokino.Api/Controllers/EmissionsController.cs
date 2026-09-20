@@ -10,10 +10,12 @@ namespace Ludokino.Api.Controllers;
 public class EmissionsController : ControllerBase
 {
     private readonly IEmissionService _emissionService;
+    private readonly IYoutubePlaylistSyncService _youtubeSyncService;
 
-    public EmissionsController(IEmissionService emissionService)
+    public EmissionsController(IEmissionService emissionService, IYoutubePlaylistSyncService youtubeSyncService)
     {
         _emissionService = emissionService;
+        _youtubeSyncService = youtubeSyncService;
     }
 
     [HttpGet]
@@ -64,5 +66,13 @@ public class EmissionsController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         return await _emissionService.DeleteAsync(id) ? NoContent() : NotFound();
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost("sync-youtube")]
+    public async Task<IActionResult> SynchronizeYoutube(CancellationToken cancellationToken)
+    {
+        var synchronizedCount = await _youtubeSyncService.SynchronizeAsync(cancellationToken);
+        return Ok(new { synchronizedCount });
     }
 }

@@ -26,6 +26,25 @@ Cors__AllowedOrigins__0=https://exemple.fr
 Cors__AllowedOrigins__1=https://admin.exemple.fr
 ```
 
+## Synchronisation YouTube
+
+La synchronisation est inactive tant que `Youtube__ApiKey` n'est pas définie. Pour l'activer :
+
+```text
+Youtube__ApiKey=<cle-api-youtube-data-v3>
+Youtube__SyncIntervalMinutes=60
+```
+
+Le worker récupère les dernières vidéos des playlists enregistrées dans `Emission.PlaylistUrl` et met à jour `LatestVideoId`, `YoutubeUrl`, `ThumbnailUrl` et `LastSyncedAt`.
+
+Une synchronisation ponctuelle peut être déclenchée par un administrateur :
+
+```text
+POST /api/Emissions/sync-youtube
+```
+
+La clé YouTube reste uniquement côté API et ne doit jamais être exposée au frontend.
+
 ## Base de données
 
 Au démarrage, l'API :

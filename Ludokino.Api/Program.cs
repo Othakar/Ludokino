@@ -42,9 +42,14 @@ builder.Services.AddScoped<IArticleService, ArticleService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<IEmissionService, EmissionService>();
+builder.Services.AddHttpClient<IYoutubePlaylistSyncService, YoutubePlaylistSyncService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(15);
+});
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IRepositoryService, RepositoryService>();
 builder.Services.AddScoped<ISeedService, SeedService>();
+builder.Services.AddHostedService<YoutubePlaylistSyncHostedService>();
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["SecretKey"] ?? "Ludokino-Development-Secret-Key-123456789";
