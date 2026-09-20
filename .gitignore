@@ -1,0 +1,39 @@
+# Build output
+**/bin/
+**/obj/
+
+# Test output
+**/TestResults/
+*.trx
+.coverage/
+
+# Local IDE files
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Local environment and secrets
+**/appsettings.Development.json
+**/appsettings.Local.json
+.env
+.env.*
+!.env.example
+
+# Documentation Markdown kept locally
+*.md
+
+# Local agent and workspace tooling
+.agents/
+.github/
+_bmad/
+_bmad-output/
+
+# EF Core temporary scripts
+**/migration-*.sql
+
+# Operating system files
+.DS_Store
+Thumbs.db
