@@ -35,6 +35,9 @@ Le serveur de développement écoute par défaut sur http://localhost:3000.
 
 - `src/app/page.tsx` : page d'accueil, navigation partagée et footer partagé.
 - `src/app/shows/page.tsx` : page des émissions, chargée depuis `/api/Emissions`.
+- `src/app/blog/page.tsx` : liste des articles, filtres catégories/tags et sélection compacte des tags.
+- `src/app/blog/[slug]/page.tsx` : détail d'article, contenu Markdown, vidéos et galeries d'images.
+- `src/app/api/image/route.ts` : proxy sécurisé pour les images externes autorisées des articles.
 - `src/app/globals.css` : styles globaux, responsive, headers de fenêtres et protections visuelles.
 - `proxy.ts` : filtrage des chemins suspects et des ressources publiques non autorisées.
 - `next.config.ts` : headers HTTP de sécurité et configuration Next.js.
@@ -63,3 +66,9 @@ Le frontend configure notamment :
 - filtrage des chemins de traversal et des dotfiles.
 
 Les ressources placées dans `public/` sont publiques par définition. Ne jamais y placer de secret, token ou fichier de configuration.
+
+## Blog
+
+La page `/blog` consomme `GET ${API_URL}/api/Articles?page=1&pageSize=30`. Les catégories et tags sont filtrables séparément ; douze tags sont affichés dans la vue compacte et le bouton `Tous les tags` ouvre ou réduit la liste complète.
+
+La page détail rend le contenu Markdown avec `react-markdown`. Les URLs d'images provenant de l'API sont chargées via `/api/image`, qui n'accepte que les hôtes d'images configurés dans la route.

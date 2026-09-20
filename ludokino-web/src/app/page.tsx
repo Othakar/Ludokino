@@ -121,7 +121,7 @@ export function isSafeYoutubeUrl(value: unknown): value is string {
   }
 }
 
-function Window({ title, children, accent = false, Icon = Monitor }: { title: string; children: React.ReactNode; accent?: boolean; Icon?: LucideIcon }) {
+export function Window({ title, children, accent = false, Icon = Monitor }: { title: string; children: React.ReactNode; accent?: boolean; Icon?: LucideIcon }) {
   return (
     <section className={`window ${accent ? "info-window" : ""}`}>
       <div className="window-header">
@@ -139,7 +139,7 @@ export function Navigation({ activeHref = "/" }: { activeHref?: string }) {
   const links = [
     ["Accueil", "/", HomeIcon],
     ["Emissions", "/shows", Tv],
-    ["Blog", "/#articles", Newspaper],
+    ["Blog", "/blog", Newspaper],
     ["Goodies", "/#goodies", Download],
     ["À propos", "/#about", Info],
   ] as const;
@@ -216,10 +216,10 @@ export default async function Home() {
                     <p className="eyebrow mono-font">{date} — NEWS</p>
                     <h2 className="article-title pixel-font">{title}</h2>
                     <p className="article-excerpt">{excerpt}</p>
-                    <a className="text-link" href="#articles">Lire l&apos;article <ArrowRight size={15} /></a>
+                    <Link className="text-link" href="/blog">Lire l&apos;article <ArrowRight size={15} /></Link>
                   </article>
                 ))}
-                <a className="pixel-button" href="#articles">Tous les articles</a>
+                <Link className="pixel-button" href="/blog">Tous les articles</Link>
               </Window>
 
               <Window title="LIENS RAPIDES" Icon={Zap}>

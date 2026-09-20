@@ -15,6 +15,8 @@ public class Article
     public string Excerpt { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
     public string? CoverImageUrl { get; set; }
+    public List<string> ImageUrls { get; set; } = new();
+    public string? VideoUrl { get; set; }
     public bool IsFeatured { get; set; }
     public ArticleStatus Status { get; set; } = ArticleStatus.Draft;
     public DateTime? PublishedAt { get; set; }

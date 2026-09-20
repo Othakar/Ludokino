@@ -6,6 +6,8 @@ public class UpdateArticleRequest
     public string? Excerpt { get; set; }
     public string? Content { get; set; }
     public string? CoverImageUrl { get; set; }
+    public List<string>? ImageUrls { get; set; }
+    public string? VideoUrl { get; set; }
     public bool? IsFeatured { get; set; }
     public string? Status { get; set; }
     public List<int>? CategoryIds { get; set; }

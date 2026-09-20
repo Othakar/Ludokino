@@ -24,7 +24,7 @@ const nextConfig: NextConfig = {
           `script-src ${scriptSource}`,
           "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
           "font-src 'self' https://fonts.gstatic.com",
-          "img-src 'self' data: blob: https://i.ytimg.com https://img.youtube.com",
+          "img-src 'self' data: blob: https://i.ytimg.com https://img.youtube.com https://i.imgur.com",
           "frame-src https://www.youtube-nocookie.com",
           "connect-src 'self' https://public.api.bsky.app",
         ].join("; "),
