@@ -2,12 +2,8 @@ import Image from "next/image";
 import {
   ArrowRight,
   CirclePlay,
-  Download,
-  Home as HomeIcon,
-  Info,
   Monitor,
   Newspaper,
-  Tv,
   Video,
   Zap,
   type LucideIcon,
@@ -54,12 +50,12 @@ function Window({ title, children, accent = false, Icon = Monitor }: { title: st
 
 function Navigation() {
   const links = [
-    ["Accueil", "#", HomeIcon],
-    ["Émissions", "#emissions", Tv],
-    ["Blog", "#articles", Newspaper],
-    ["Goodies", "#goodies", Download],
-    ["À propos", "#about", Info],
-  ] as const;
+    ["Accueil", "#"],
+    ["Emissions", "#emissions"],
+    ["Blog", "#articles"],
+    ["Goodies", "#goodies"],
+    ["À propos", "#about"],
+  ];
 
   return (
     <nav className="site-nav" aria-label="Navigation principale">
@@ -67,17 +63,16 @@ function Navigation() {
         <Image src="/img/LDKN.svg" alt="LUDOKINO" width={100} height={34} priority />
       </a>
       <div className="nav-links">
-        {links.map(([label, href, Icon]) => (
+        {links.map(([label, href]) => (
           <a className={`nav-link pixel-font ${label === "Accueil" ? "active" : ""}`} href={href} key={label}>
-            <Icon size={18} aria-hidden="true" />
             <span>{label}</span>
           </a>
         ))}
       </div>
       <div className="social-links" aria-label="Réseaux sociaux">
-        <a href="https://www.youtube.com/@ldkino" aria-label="YouTube"><BrandIcon icon={siYoutube} /></a>
+        <a href="https://bsky.app/profile/ludokino.net" aria-label="Bluesky"><BrandIcon icon={siBluesky} /></a>
         <a href="https://www.twitch.tv/ludokino" aria-label="Twitch"><BrandIcon icon={siTwitch} /></a>
-        <a href="https://www.instagram.com/ludokino_/" aria-label="Instagram"><BrandIcon icon={siInstagram} /></a>
+        <a href="https://www.youtube.com/@ldkino" aria-label="YouTube"><BrandIcon icon={siYoutube} /></a>
       </div>
     </nav>
   );
