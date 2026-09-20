@@ -223,7 +223,7 @@ p {
   align-items: center;
   min-width: max-content;
   font-size: 0.76rem;
-  animation: ticker-scroll 12s linear infinite;
+  animation: ticker-scroll 28s linear infinite;
 }
 
 .ticker-copy {
@@ -352,6 +352,7 @@ p {
 }
 
 .show-thumb {
+  position: relative;
   display: grid;
   min-height: 118px;
   place-items: center;
@@ -361,9 +362,27 @@ p {
 }
 
 .show-thumb img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.show-thumb.has-image::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: rgba(17, 21, 34, 0.12);
+}
+
+.show-thumb-play {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  color: var(--cyan);
+  filter: drop-shadow(2px 2px 0 #111522);
 }
 
 .show-card-content {

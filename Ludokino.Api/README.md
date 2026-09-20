@@ -33,9 +33,11 @@ La synchronisation est inactive tant que `Youtube__ApiKey` n'est pas définie. P
 ```text
 Youtube__ApiKey=<cle-api-youtube-data-v3>
 Youtube__SyncIntervalMinutes=60
+Youtube__ChannelHandle=@LDKino
+Youtube__MinimumSyncIntervalMinutes=30
 ```
 
-Le worker récupère les dernières vidéos des playlists enregistrées dans `Emission.PlaylistUrl` et met à jour `LatestVideoId`, `YoutubeUrl`, `ThumbnailUrl` et `LastSyncedAt`.
+Le worker découvre les playlists publiques de la chaîne, crée ou met à jour les émissions correspondantes, puis récupère les dernières vidéos. Il met à jour `YoutubePlaylistId`, `LatestVideoId`, `YoutubeUrl`, `ThumbnailUrl` et `LastSyncedAt`. L'intervalle minimum empêche les appels manuels répétés de solliciter YouTube trop fréquemment.
 
 Une synchronisation ponctuelle peut être déclenchée par un administrateur :
 

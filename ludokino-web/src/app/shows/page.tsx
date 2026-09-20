@@ -23,6 +23,7 @@ function isEmission(value: unknown): value is Emission {
   return (
     typeof emission.id === "number" &&
     typeof emission.name === "string" &&
+    typeof emission.slug === "string" &&
     typeof emission.description === "string" &&
     typeof emission.type === "string" &&
     isSafeYoutubeUrl(emission.youtubeUrl) &&
@@ -31,7 +32,7 @@ function isEmission(value: unknown): value is Emission {
 }
 
 async function getEmissions(): Promise<Emission[]> {
-  const apiUrl = process.env.API_URL;
+  const apiUrl = process.env.API_URL ?? (process.env.NODE_ENV === "development" ? "http://localhost:5000" : undefined);
   const fallback = process.env.NODE_ENV === "development" ? fallbackShows : [];
   if (!apiUrl) return fallback;
 
@@ -49,7 +50,20 @@ async function getEmissions(): Promise<Emission[]> {
     if (!Array.isArray(data)) return fallback;
 
     const emissions = data.filter(isEmission);
-    return emissions.length > 0 ? emissions : [];
+    const uniqueEmissions = new Map<string, Emission>();
+    for (const emission of emissions) {
+      const key = emission.name.trim().toLocaleLowerCase();
+      if (!uniqueEmissions.has(key)) uniqueEmissions.set(key, emission);
+    }
+
+    if (process.env.NODE_ENV === "development") {
+      for (const fallback of fallbackShows) {
+        const key = fallback.name.trim().toLocaleLowerCase();
+        if (!uniqueEmissions.has(key)) uniqueEmissions.set(key, fallback);
+      }
+    }
+
+    return [...uniqueEmissions.values()];
   } catch {
     return fallback;
   } finally {
@@ -87,11 +101,14 @@ export default async function ShowsPage() {
           {emissions.map((emission) => (
             <Window title={emission.name} key={emission.id}>
               <article className="show-card">
-                <div className="show-thumb">
-                  {emission.imageUrl ? (
+                <div className={`show-thumb ${emission.imageUrl ? "has-image" : ""}`}>
+                  {emission.imageUrl && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={emission.imageUrl} alt={`Miniature de ${emission.name}`} />
-                  ) : <PlayCircle size={46} aria-hidden="true" />}
+                  )}
+                  <span className="show-thumb-play">
+                    <PlayCircle size={46} aria-hidden="true" />
+                  </span>
                 </div>
                 <div className="show-card-content">
                   <span className="show-type mono-font">{emission.type || "ÉMISSION"}</span>
