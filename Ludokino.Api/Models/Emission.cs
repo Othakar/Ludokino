@@ -9,6 +9,9 @@ public class Emission
     public string Type { get; set; } = string.Empty;
     public string YoutubeUrl { get; set; } = string.Empty;
     public string? PlaylistUrl { get; set; }
+    public string? YoutubePlaylistId { get; set; }
+    public string? LatestVideoId { get; set; }
+    public DateTime? LastSyncedAt { get; set; }
     public string? ThumbnailUrl { get; set; }
     public bool IsFeatured { get; set; }
 

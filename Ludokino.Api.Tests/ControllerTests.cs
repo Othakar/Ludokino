@@ -30,7 +30,7 @@ public class ControllerTests
         service
             .Setup(item => item.CreateAsync(It.IsAny<CreateEmissionRequest>()))
             .ThrowsAsync(new ArgumentException("Un lien YouTube HTTPS valide est obligatoire."));
-        var controller = new EmissionsController(service.Object);
+        var controller = new EmissionsController(service.Object, new Mock<IYoutubePlaylistSyncService>().Object);
 
         var result = await controller.Create(new CreateEmissionRequest());
 
@@ -42,7 +42,7 @@ public class ControllerTests
     {
         var service = new Mock<IEmissionService>();
         service.Setup(item => item.GetAllAsync()).ReturnsAsync(new List<EmissionDto>());
-        var controller = new EmissionsController(service.Object);
+        var controller = new EmissionsController(service.Object, new Mock<IYoutubePlaylistSyncService>().Object);
 
         var result = await controller.GetAll();
 

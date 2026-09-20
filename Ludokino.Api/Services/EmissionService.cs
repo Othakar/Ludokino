@@ -149,6 +149,8 @@ public class EmissionService : IEmissionService
         Type = emission.Type,
         YoutubeUrl = emission.YoutubeUrl,
         PlaylistUrl = emission.PlaylistUrl,
+        LatestVideoId = emission.LatestVideoId,
+        LastSyncedAt = emission.LastSyncedAt,
         ImageUrl = emission.ThumbnailUrl
     };
 }
