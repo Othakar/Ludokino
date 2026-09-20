@@ -200,10 +200,16 @@ p {
 }
 
 .window-control.close {
-  background: #ef4444;
+  background: var(--border);
   border-color: rgba(255, 255, 255, 0.65);
   color: #fff;
   text-shadow: 1px 1px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.window-control.close:hover {
+  background: #ef4444;
 }
 
 .window-body {

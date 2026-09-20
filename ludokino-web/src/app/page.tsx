@@ -34,9 +34,8 @@ function Window({ title, children, accent = false, Icon = Monitor }: { title: st
     <section className={`window ${accent ? "info-window" : ""}`}>
       <div className="window-header">
         <span className="window-title pixel-font"><Icon size={19} strokeWidth={2.2} aria-hidden="true" />{title}</span>
-        <span className="window-controls" aria-hidden="true">
-          <span className="window-control" />
-          <span className="window-control close">×</span>
+        <span className="window-controls">
+          <button className="window-control close" type="button" aria-label={`Fermer ${title}`}>×</button>
         </span>
       </div>
       <div className="window-body">{children}</div>
