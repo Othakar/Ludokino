@@ -52,6 +52,18 @@ dotnet run --project Ludokino.Api/Ludokino.Api.csproj
 
 Swagger est disponible en environnement de développement sur `/swagger`.
 
+## CORS
+
+En développement, l'API autorise automatiquement le frontend local `http://localhost:3000`.
+En production, définir explicitement les origines autorisées avec la configuration hiérarchique ASP.NET Core :
+
+```text
+Cors__AllowedOrigins__0=https://www.exemple.fr
+Cors__AllowedOrigins__1=https://admin.exemple.fr
+```
+
+Seules ces origines peuvent appeler l'API avec des headers et des credentials. Ne pas utiliser `AllowAnyOrigin` avec `AllowCredentials`.
+
 ## Tester
 
 Lancer les tests unitaires et de contrôleurs :
