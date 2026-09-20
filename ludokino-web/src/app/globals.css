@@ -565,23 +565,16 @@ p {
 }
 
 @media (min-width: 768px) {
-  .site-nav {
-    display: grid;
-    grid-template-columns: minmax(132px, 1fr) auto minmax(132px, 1fr);
-  }
-
   .brand {
     display: flex;
-    justify-self: start;
   }
 
   .nav-links {
-    flex: none;
+    flex: 1;
   }
 
   .social-links {
     display: flex;
-    justify-self: end;
   }
 }
 

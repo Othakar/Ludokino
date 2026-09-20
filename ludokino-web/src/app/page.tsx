@@ -2,8 +2,12 @@ import Image from "next/image";
 import {
   ArrowRight,
   CirclePlay,
+  Download,
+  Home as HomeIcon,
+  Info,
   Monitor,
   Newspaper,
+  Tv,
   Video,
   Zap,
   type LucideIcon,
@@ -50,12 +54,12 @@ function Window({ title, children, accent = false, Icon = Monitor }: { title: st
 
 function Navigation() {
   const links = [
-    ["Accueil", "#"],
-    ["Emissions", "#emissions"],
-    ["Blog", "#articles"],
-    ["Goodies", "#goodies"],
-    ["À propos", "#about"],
-  ];
+    ["Accueil", "#", HomeIcon],
+    ["Emissions", "#emissions", Tv],
+    ["Blog", "#articles", Newspaper],
+    ["Goodies", "#goodies", Download],
+    ["À propos", "#about", Info],
+  ] as const;
 
   return (
     <nav className="site-nav" aria-label="Navigation principale">
@@ -63,8 +67,9 @@ function Navigation() {
         <Image src="/img/LDKN.svg" alt="LUDOKINO" width={100} height={34} priority />
       </a>
       <div className="nav-links">
-        {links.map(([label, href]) => (
+        {links.map(([label, href, Icon]) => (
           <a className={`nav-link pixel-font ${label === "Accueil" ? "active" : ""}`} href={href} key={label}>
+            <Icon size={20} aria-hidden="true" />
             <span>{label}</span>
           </a>
         ))}
