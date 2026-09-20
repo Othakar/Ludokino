@@ -1,16 +1,14 @@
-# LUDOKINO
+# Ludokino
 
-Ludokino est un média indépendant consacré aux jeux vidéo, à l'animation japonaise, au tokusatsu, à la musique et à la culture geek.
+Dépôt monorepo contenant une API ASP.NET Core, un frontend Next.js et les tests associés.
 
-Le dépôt contient l'API métier, les tests automatisés et la première fondation du frontend reprenant l'identité visuelle historique du site : fenêtres Y2K, palette bleu nuit, logo LDKN et typographies du site original.
-
-## Structure du dépôt
+## Projets
 
 ```text
-Ludokino.Api/          API ASP.NET Core 8, PostgreSQL et migrations EF Core
+Ludokino.Api/          API REST .NET 8, EF Core, PostgreSQL et JWT
 Ludokino.Api.Tests/    Tests unitaires, contrôleurs et intégration PostgreSQL
-ludokino-web/          Frontend Next.js et interface publique Ludokino
-.github/workflows/     CI GitHub Actions
+ludokino-web/          Frontend Next.js App Router
+.github/workflows/     Workflow GitHub Actions de build et de tests
 Ludokino.sln           Solution .NET de l'API et des tests
 ```
 
@@ -18,7 +16,7 @@ Ludokino.sln           Solution .NET de l'API et des tests
 
 - .NET SDK 8
 - Node.js et npm
-- PostgreSQL 14 ou supérieur pour l'API et les tests d'intégration
+- PostgreSQL 14 ou supérieur
 - Git
 
 ## Installation
@@ -27,12 +25,10 @@ Ludokino.sln           Solution .NET de l'API et des tests
 git clone https://github.com/Othakar/Ludokino.git
 Set-Location Ludokino
 dotnet restore Ludokino.sln
-Set-Location ludokino-web
-npm install
-Set-Location ..
+npm --prefix ludokino-web install
 ```
 
-Créer localement `Ludokino.Api/appsettings.Development.json`. Ce fichier est ignoré par Git :
+Créer `Ludokino.Api/appsettings.Development.json` localement :
 
 ```json
 {
@@ -47,57 +43,33 @@ Créer localement `Ludokino.Api/appsettings.Development.json`. Ce fichier est ig
 }
 ```
 
-## Lancer le projet
+Ce fichier est ignoré par Git.
 
-Dans un premier terminal, lancer l'API :
+## Démarrage local
+
+Terminal 1, API :
 
 ```powershell
 dotnet run --project Ludokino.Api/Ludokino.Api.csproj
 ```
 
-Dans un second terminal, lancer le frontend :
+Terminal 2, frontend :
 
 ```powershell
 npm --prefix ludokino-web run dev
 ```
 
-Le frontend est disponible sur http://localhost:3000. Swagger est disponible sur `/swagger` lorsque l'API tourne en environnement de développement.
+URLs locales :
 
-Les migrations EF Core sont appliquées automatiquement au démarrage de l'API avant le seed initial. Pour les appliquer manuellement :
+- Frontend : http://localhost:3000
+- API : selon l'URL affichée par ASP.NET Core
+- Swagger : `<url-api>/swagger` en environnement Development
 
-```powershell
-dotnet ef database update --project Ludokino.Api/Ludokino.Api.csproj
-```
+L'API applique les migrations EF Core au démarrage avant le seed initial.
 
-## Tests
+## Configuration de production
 
-Lancer la suite .NET :
-
-```powershell
-dotnet test Ludokino.sln --configuration Release
-```
-
-Les tests PostgreSQL utilisent exclusivement une base dédiée `ludokino_test` :
-
-```powershell
-$env:LUDOKINO_TEST_CONNECTION_STRING = "Host=localhost;Database=ludokino_test;Username=postgres;Password=<mot-de-passe>"
-dotnet test Ludokino.Api.Tests/Ludokino.Api.Tests.csproj --configuration Release
-Remove-Item Env:LUDOKINO_TEST_CONNECTION_STRING
-```
-
-Sans cette variable, le test PostgreSQL est ignoré. Dans GitHub Actions, PostgreSQL est démarré automatiquement dans un service éphémère et ce test est exécuté.
-
-## API et sécurité
-
-- Authentification JWT pour les rôles `Admin` et `Redacteur`.
-- Articles publiés accessibles publiquement; brouillons réservés aux comptes autorisés.
-- Catégories, tags et émissions gérés par des services et contrôleurs dédiés.
-- Une émission exige un lien YouTube HTTPS valide.
-- Migrations EF Core PostgreSQL versionnées dans `Ludokino.Api/Migrations`.
-- Headers HTTP de sécurité activés dans l'API.
-- CORS limité aux origines configurées; en développement, `http://localhost:3000` est autorisé.
-
-En production, fournir les paramètres par variables d'environnement :
+Utiliser uniquement des variables d'environnement pour les secrets et les connexions :
 
 ```text
 ConnectionStrings__DefaultConnection
@@ -105,30 +77,36 @@ JwtSettings__SecretKey
 JwtSettings__Issuer
 JwtSettings__Audience
 Cors__AllowedOrigins__0
+API_URL
 ```
 
-Ne jamais versionner de mot de passe, token ou chaîne de connexion réelle.
+La clé YouTube, lorsqu'elle sera activée côté API, devra également rester dans une variable d'environnement et ne jamais être exposée au frontend.
 
-## Workflow Git
-
-La branche `main` est protégée. Chaque fonctionnalité doit utiliser sa propre branche :
-
-```powershell
-git switch main
-git pull
-git switch -c feature/ma-fonctionnalite
-```
-
-Avant de créer une Pull Request :
+## Vérification locale
 
 ```powershell
 dotnet build Ludokino.sln --configuration Release
 dotnet test Ludokino.sln --configuration Release
 npm --prefix ludokino-web run lint
 npm --prefix ludokino-web run build
-git add .
-git commit -m "Décrit la modification"
-git push -u origin feature/ma-fonctionnalite
 ```
 
-La Pull Request vers `main` doit passer la vérification `build-and-test`. Les branches sont supprimées automatiquement après fusion.
+## Workflow Git
+
+`main` est protégée. Chaque modification doit être réalisée sur une branche dédiée puis proposée par Pull Request :
+
+```powershell
+git switch main
+git pull
+git switch -c feature/nom-de-la-fonctionnalite
+```
+
+Après validation locale :
+
+```powershell
+git add .
+git commit -m "Description technique de la modification"
+git push -u origin feature/nom-de-la-fonctionnalite
+```
+
+La CI `build-and-test` doit réussir avant la fusion. Les branches fusionnées sont supprimées automatiquement.

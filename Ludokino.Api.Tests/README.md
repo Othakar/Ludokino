@@ -1,29 +1,32 @@
-# Tests de l'API Ludokino
+# Ludokino.Api.Tests
 
-Ce projet contient les tests unitaires des services, les tests directs des contrôleurs et le test d'intégration du schéma PostgreSQL.
+Projet de tests .NET 8 utilisant xUnit, EF Core InMemory et PostgreSQL.
 
-## Lancer les tests
+## Exécuter les tests
+
+Depuis la racine :
 
 ```powershell
 dotnet test Ludokino.Api.Tests/Ludokino.Api.Tests.csproj --configuration Release
 ```
 
-## Tests unitaires
+Ou sur toute la solution :
 
-Les tests des services utilisent EF Core InMemory. Ils couvrent notamment :
+```powershell
+dotnet test Ludokino.sln --configuration Release
+```
 
-- l'authentification et les mots de passe invalides;
-- la génération de slugs d'articles;
-- l'exclusion des brouillons;
-- la validation des liens YouTube des émissions;
-- les réponses HTTP des contrôleurs;
-- les headers de sécurité en développement et en production.
+## Types de tests
 
-Ils ne nécessitent pas de serveur PostgreSQL.
+- Tests de services avec EF Core InMemory.
+- Tests directs des contrôleurs et des réponses HTTP.
+- Tests des permissions déclarées sur les contrôleurs.
+- Tests des headers de sécurité de l'API.
+- Test d'intégration du schéma PostgreSQL et des migrations.
 
-## Test PostgreSQL
+## PostgreSQL
 
-Le test de schéma utilise une base séparée nommée `ludokino_test` et les mêmes migrations EF Core que l'API. Il ne doit jamais utiliser `ludokino` ou une base de production.
+Le test d'intégration utilise exclusivement la base `ludokino_test` :
 
 ```powershell
 $env:LUDOKINO_TEST_CONNECTION_STRING = "Host=localhost;Database=ludokino_test;Username=postgres;Password=<mot-de-passe>"
@@ -31,8 +34,12 @@ dotnet test Ludokino.Api.Tests/Ludokino.Api.Tests.csproj --configuration Release
 Remove-Item Env:LUDOKINO_TEST_CONNECTION_STRING
 ```
 
-Le test applique les migrations, vérifie la connexion et confirme qu'aucune migration ne reste en attente. Sans la variable d'environnement, il est ignoré.
+Le test applique les migrations et vérifie qu'il ne reste aucune migration en attente. Sans cette variable, le test PostgreSQL est ignoré.
 
 ## CI
 
-GitHub Actions démarre automatiquement un service PostgreSQL 16 et fournit `LUDOKINO_TEST_CONNECTION_STRING` pendant le job `build-and-test`. Le test d'intégration est donc exécuté dans chaque Pull Request.
+Le workflow GitHub Actions démarre PostgreSQL 16 dans un service éphémère et définit automatiquement `LUDOKINO_TEST_CONNECTION_STRING`. Les tests d'intégration sont donc exécutés dans les Pull Requests.
+
+## Conventions
+
+Les tests ne doivent jamais utiliser la base de développement ou une base de production. Les secrets doivent être fournis par variables d'environnement et ne doivent pas être commités.

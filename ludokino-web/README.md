@@ -1,51 +1,65 @@
-# Frontend Ludokino
+# ludokino-web
 
-Frontend public du site Ludokino, construit avec Next.js, TypeScript et Tailwind CSS.
-
-Cette application reprend l'identite visuelle du site historique : fenetres Y2K, palette bleu nuit, logo LDKN, effet ecran cathodique et typographies d'origine.
+Frontend Next.js 16 avec TypeScript et App Router.
 
 ## Installation
 
-Depuis la racine du depot :
+Depuis la racine du dépôt :
 
 ```powershell
 npm --prefix ludokino-web install
 ```
 
-## Developpement
+## Variables d'environnement
+
+Créer éventuellement `ludokino-web/.env.local` :
+
+```text
+API_URL=http://localhost:5000
+```
+
+En production, `API_URL` doit pointer vers l'API publique. Si elle est absente en développement, la page émissions utilise son catalogue local de secours. En production, l'absence de l'API produit un état vide plutôt que des données de développement.
+
+## Commandes
 
 ```powershell
 npm --prefix ludokino-web run dev
-```
-
-Le site est disponible sur http://localhost:3000.
-
-## Validation
-
-```powershell
 npm --prefix ludokino-web run lint
 npm --prefix ludokino-web run build
+npm --prefix ludokino-web run start
 ```
 
-## Organisation
+Le serveur de développement écoute par défaut sur http://localhost:3000.
 
-- `src/app/page.tsx` : page d'accueil et composants visuels de la fondation.
-- `src/app/globals.css` : palette, fenetres Y2K, footer, responsive et effet CRT.
-- `public/img/` : logo, favicon et assets provenant de l'ancien site.
+## Fonctionnement
 
-## Identite visuelle
+- `src/app/page.tsx` : page d'accueil, navigation partagée et footer partagé.
+- `src/app/shows/page.tsx` : page des émissions, chargée depuis `/api/Emissions`.
+- `src/app/globals.css` : styles globaux, responsive, headers de fenêtres et protections visuelles.
+- `proxy.ts` : filtrage des chemins suspects et des ressources publiques non autorisées.
+- `next.config.ts` : headers HTTP de sécurité et configuration Next.js.
+- `public/img/` : ressources statiques explicitement utilisées par le frontend.
 
-- `Libre Franklin` : navigation, titres et interfaces.
-- `Space Grotesk` : texte courant.
-- `JetBrains Mono` : informations systeme et metriques.
-- `LDKN.svg` : logo officiel Ludokino, affiche en blanc dans la navigation.
+## Appel API émissions
 
-## API
+La page `/shows` appelle :
 
-L'API locale est lancee separement :
-
-```powershell
-dotnet run --project Ludokino.Api/Ludokino.Api.csproj
+```text
+GET ${API_URL}/api/Emissions
 ```
 
-La configuration CORS de l'API autorise le frontend local `http://localhost:3000` en developpement.
+Elle vérifie la forme minimale de chaque élément, impose une URL YouTube HTTPS pour les liens de lecture et utilise un fallback local uniquement en développement lorsque l'API est indisponible.
+
+## Sécurité frontend
+
+Le frontend configure notamment :
+
+- CSP;
+- HSTS en production;
+- `X-Content-Type-Options`;
+- `X-Frame-Options`;
+- `Referrer-Policy`;
+- `Permissions-Policy`;
+- filtrage des chemins de traversal et des dotfiles.
+
+Les ressources placées dans `public/` sont publiques par définition. Ne jamais y placer de secret, token ou fichier de configuration.
