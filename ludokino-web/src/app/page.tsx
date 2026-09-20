@@ -2,13 +2,17 @@ import Image from "next/image";
 import {
   ArrowRight,
   Camera,
+  CirclePlay,
   Download,
   Home as HomeIcon,
   Info,
+  Monitor,
   Newspaper,
   Radio,
   Tv,
   Video,
+  Zap,
+  type LucideIcon,
 } from "lucide-react";
 
 const shows = [
@@ -25,14 +29,14 @@ const articles = [
   ["8 AOÛT 2026 À 18H30", "YOSHIKI ET KYARY PAMYU PAMYU", "LUDOKINO au plus près des grands artistes japonais à Japan Expo 2026."],
 ];
 
-function Window({ title, children, accent = false }: { title: string; children: React.ReactNode; accent?: boolean }) {
+function Window({ title, children, accent = false, Icon = Monitor }: { title: string; children: React.ReactNode; accent?: boolean; Icon?: LucideIcon }) {
   return (
     <section className={`window ${accent ? "info-window" : ""}`}>
       <div className="window-header">
-        <span className="pixel-font">{title}</span>
+        <span className="window-title pixel-font"><Icon size={19} strokeWidth={2.2} aria-hidden="true" />{title}</span>
         <span className="window-controls" aria-hidden="true">
           <span className="window-control" />
-          <span className="window-control close" />
+          <span className="window-control close">×</span>
         </span>
       </div>
       <div className="window-body">{children}</div>
@@ -79,12 +83,12 @@ export default function Home() {
       <main className="page-shell">
         <div className="home-grid">
           <div className="stack">
-            <Window title="LES OMNIBUS">
+            <Window title="LES OMNIBUS" Icon={Video}>
               <iframe className="video-frame" src="https://www.youtube-nocookie.com/embed/videoseries?list=PL13-SWMvlfiwijmK3dQ_rHY67bJj6rJ3P" title="Playlist Omnibus Ludokino" allowFullScreen />
             </Window>
 
             <div className="split-grid">
-              <Window title="DERNIERS ARTICLES">
+              <Window title="DERNIERS ARTICLES" Icon={Newspaper}>
                 {articles.map(([date, title, excerpt]) => (
                   <article className="article-item" key={title}>
                     <p className="eyebrow mono-font">{date} — NEWS</p>
@@ -96,7 +100,7 @@ export default function Home() {
                 <a className="pixel-button" href="#articles">Tous les articles</a>
               </Window>
 
-              <Window title="LIENS RAPIDES">
+              <Window title="LIENS RAPIDES" Icon={Zap}>
                 <div className="quick-links">
                   <a className="quick-link" href="https://www.youtube.com/@ldkino"><Video size={29} /><span>YouTube</span></a>
                   <a className="quick-link" href="https://www.twitch.tv/ludokino"><Radio size={29} /><span>Twitch</span></a>
@@ -108,7 +112,7 @@ export default function Home() {
           </div>
 
           <aside className="stack">
-            <Window title="INFO.SYS" accent>
+            <Window title="INFO.SYS" accent Icon={Monitor}>
               <div className="info-list mono-font">
                 <div className="info-row"><span className="info-label">STATUS:</span><span className="status-offline">OFFLINE</span></div>
                 <div className="info-row"><span className="info-label">VERSION:</span><span>2026.08</span></div>
@@ -117,7 +121,7 @@ export default function Home() {
               </div>
             </Window>
 
-            <Window title="NOS ÉMISSIONS">
+            <Window title="NOS ÉMISSIONS" Icon={CirclePlay}>
               <div className="show-list">
                 {shows.map(([title, description]) => (
                   <a className="show-item" href="#emissions" key={title}>
@@ -128,15 +132,23 @@ export default function Home() {
               </div>
             </Window>
 
-            <Window title="ESPACE PUBLICITAIRE">
+            <Window title="ESPACE PUBLICITAIRE" Icon={Monitor}>
               <div className="ad-space pixel-font">On n&apos;a pas encore trouvé de sponsor,<br />mais ça pourrait être vous !</div>
             </Window>
           </aside>
         </div>
       </main>
-      <footer className="site-footer mono-font">
-        <span>CPU: 98% · RAM: 512MB · OS: LUDOKINO_OS v1.2</span>
-        <span>© 2026 LUDOKINO</span>
+      <footer className="site-footer">
+        <div className="system-metrics mono-font">
+          <span>CPU: 98%</span>
+          <span>RAM: 512MB</span>
+          <span>OS: LUDOKINO_OS v1.0</span>
+        </div>
+        <p className="footer-legal pixel-font">
+          <span>© 2026 LUDOKINO - TOUS DROITS RÉSERVÉS</span>
+          <span className="footer-divider">|</span>
+          <a href="#mentions-legales">Mentions légales</a>
+        </p>
       </footer>
     </div>
   );
