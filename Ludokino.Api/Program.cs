@@ -1,5 +1,6 @@
 using Ludokino.Api.Data;
 using Ludokino.Api.Middleware;
+using Ludokino.Api.Security;
 using Ludokino.Api.Services;
 using Ludokino.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,14 +14,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var configuredOrigins = builder.Configuration
-    .GetSection("Cors:AllowedOrigins")
-    .Get<string[]>() ?? Array.Empty<string>();
-
-if (configuredOrigins.Length == 0 && builder.Environment.IsDevelopment())
-{
-    configuredOrigins = new[] { "http://localhost:3000" };
-}
+var configuredOrigins = StartupSecurityValidator.GetCorsOrigins(builder.Configuration, builder.Environment);
+var jwtConfiguration = StartupSecurityValidator.GetJwtConfiguration(builder.Configuration, builder.Environment);
 
 builder.Services.AddCors(options =>
 {
@@ -51,9 +46,6 @@ builder.Services.AddScoped<IRepositoryService, RepositoryService>();
 builder.Services.AddScoped<ISeedService, SeedService>();
 builder.Services.AddHostedService<YoutubePlaylistSyncHostedService>();
 
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = jwtSettings["SecretKey"] ?? "Ludokino-Development-Secret-Key-123456789";
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -63,12 +55,12 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
-        ValidIssuer = jwtSettings["Issuer"],
+        ValidIssuer = jwtConfiguration.Issuer,
         ValidateAudience = true,
-        ValidAudience = jwtSettings["Audience"],
+        ValidAudience = jwtConfiguration.Audience,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfiguration.SecretKey))
     };
 });
 

@@ -4,6 +4,7 @@ using System.Text;
 using BCrypt.Net;
 using Ludokino.Api.Data;
 using Ludokino.Api.DTOs.Auth;
+using Ludokino.Api.Security;
 using Ludokino.Api.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -14,11 +15,13 @@ public class AuthService : IAuthService
 {
     private readonly AppDbContext _context;
     private readonly IConfiguration _configuration;
+    private readonly IHostEnvironment _environment;
 
-    public AuthService(AppDbContext context, IConfiguration configuration)
+    public AuthService(AppDbContext context, IConfiguration configuration, IHostEnvironment environment)
     {
         _context = context;
         _configuration = configuration;
+        _environment = environment;
     }
 
     public async Task<LoginResponse?> LoginAsync(LoginRequest request)
@@ -87,13 +90,10 @@ public class AuthService : IAuthService
 
     private string GenerateJwtToken(Ludokino.Api.Models.User user)
     {
-        var jwtSettings = _configuration.GetSection("JwtSettings");
-        var secretKey = jwtSettings["SecretKey"] ?? "Ludokino-Development-Secret-Key-123456789";
-        var issuer = jwtSettings["Issuer"] ?? "LudokinoApi";
-        var audience = jwtSettings["Audience"] ?? "LudokinoClient";
+        var jwtConfiguration = StartupSecurityValidator.GetJwtConfiguration(_configuration, _environment);
 
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.UTF8.GetBytes(secretKey);
+        var key = Encoding.UTF8.GetBytes(jwtConfiguration.SecretKey);
 
         var claims = new List<Claim>
         {
@@ -107,8 +107,8 @@ public class AuthService : IAuthService
         {
             Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddDays(1),
-            Issuer = issuer,
-            Audience = audience,
+            Issuer = jwtConfiguration.Issuer,
+            Audience = jwtConfiguration.Audience,
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature)
