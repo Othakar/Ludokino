@@ -1,4 +1,5 @@
 using System.Reflection;
+using Ludokino.Api.DTOs.Articles;
 using Ludokino.Api.Controllers;
 using Ludokino.Api.DTOs.Emissions;
 using Ludokino.Api.Services.Interfaces;
@@ -48,6 +49,45 @@ public class ControllerTests
 
         var okResult = Assert.IsType<OkObjectResult>(result);
         Assert.IsType<List<EmissionDto>>(okResult.Value);
+    }
+
+    [Fact]
+    public async Task ArticlesController_GetBySlug_ReturnsArticleMediaContract()
+    {
+        var service = new Mock<IArticleService>();
+        service.Setup(item => item.GetBySlugAsync("media-article", false))
+            .ReturnsAsync(new ArticleDto
+            {
+                Slug = "media-article",
+                Content = "Contenu",
+                VideoUrl = "https://www.youtube.com/watch?v=video123",
+                ImageUrls = ["https://i.imgur.com/gallery.jpeg"]
+            });
+        var controller = new ArticlesController(service.Object);
+
+        var result = await controller.GetBySlug("media-article");
+
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var article = Assert.IsType<ArticleDto>(okResult.Value);
+        Assert.Equal("Contenu", article.Content);
+        Assert.Equal("https://www.youtube.com/watch?v=video123", article.VideoUrl);
+        Assert.Single(article.ImageUrls);
+    }
+
+    [Fact]
+    public async Task EmissionsController_SynchronizeYoutube_ReturnsSynchronizedCount()
+    {
+        var syncService = new Mock<IYoutubePlaylistSyncService>();
+        syncService.Setup(item => item.SynchronizeAsync(It.IsAny<CancellationToken>())).ReturnsAsync(2);
+        var controller = new EmissionsController(new Mock<IEmissionService>().Object, syncService.Object);
+
+        var result = await controller.SynchronizeYoutube(CancellationToken.None);
+
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        Assert.NotNull(okResult.Value);
+        var payload = okResult.Value!;
+        var synchronizedCount = payload.GetType().GetProperty("synchronizedCount")?.GetValue(payload);
+        Assert.Equal(2, synchronizedCount);
     }
 
     [Fact]

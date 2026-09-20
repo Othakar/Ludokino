@@ -67,6 +67,25 @@ public class ArticleServiceTests
     }
 
     [Fact]
+    public async Task GetBySlugAsync_ReturnsContentVideoAndGalleryMetadata()
+    {
+        await using var context = TestDbContextFactory.CreateInMemory();
+        var service = new ArticleService(context);
+        var request = CreateRequest("Article détail", "Published");
+        request.Content = "## Contenu média";
+        request.ImageUrls = ["https://i.imgur.com/gallery.jpeg"];
+        request.VideoUrl = "https://www.youtube.com/watch?v=video123";
+
+        var created = await service.CreateAsync(request);
+        var detail = await service.GetBySlugAsync(created.Slug);
+
+        Assert.NotNull(detail);
+        Assert.Equal(request.Content, detail!.Content);
+        Assert.Equal(request.VideoUrl, detail.VideoUrl);
+        Assert.Equal(request.ImageUrls, detail.ImageUrls);
+    }
+
+    [Fact]
     public async Task UpdateAsync_ReplacesGalleryAndVideoMetadata()
     {
         await using var context = TestDbContextFactory.CreateInMemory();
