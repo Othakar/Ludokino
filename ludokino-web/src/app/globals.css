@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Space+Grotesk:wght@300;400;500;600;700&family=VT323&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Libre+Franklin:wght@400;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=VT323&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -44,7 +44,8 @@ p {
 }
 
 .pixel-font {
-  font-family: "VT323", monospace;
+  font-family: "Libre Franklin", Arial, sans-serif;
+  font-weight: 700;
   letter-spacing: 0.08em;
 }
 
@@ -88,6 +89,11 @@ p {
   padding: 10px 18px;
   background: #252d4a;
   border-right: 2px solid #1a1f34;
+}
+
+.brand img {
+  height: auto;
+  filter: invert(1);
 }
 
 .nav-links {
@@ -175,7 +181,9 @@ p {
   align-items: center;
   gap: 9px;
   min-width: 0;
-  font-size: 1.55rem;
+  font-family: "Libre Franklin", Arial, sans-serif;
+  font-size: 1.35rem;
+  font-weight: 700;
   line-height: 1;
   text-transform: uppercase;
 }
@@ -243,8 +251,11 @@ p {
 .article-title {
   margin-top: 5px;
   color: var(--cream);
+  font-family: "Libre Franklin", Arial, sans-serif;
   font-size: 1.45rem;
+  font-weight: 700;
   line-height: 1;
+  letter-spacing: 0;
 }
 
 .article-excerpt {
@@ -277,8 +288,9 @@ p {
   background: var(--window);
   border: 2px solid var(--border);
   box-shadow: 3px 3px 0 #111522;
-  font-family: "VT323", monospace;
-  font-size: 1.25rem;
+  font-family: "Libre Franklin", Arial, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
   letter-spacing: 0.08em;
 }
 
@@ -301,8 +313,9 @@ p {
   padding: 14px;
   border: 1px solid var(--border);
   color: var(--cyan);
-  font-family: "VT323", monospace;
-  font-size: 1.15rem;
+  font-family: "Libre Franklin", Arial, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
   text-transform: uppercase;
 }
 
@@ -360,8 +373,10 @@ p {
 
 .show-name {
   color: var(--cyan);
-  font-family: "VT323", monospace;
-  font-size: 1.2rem;
+  font-family: "Libre Franklin", Arial, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -416,7 +431,10 @@ p {
   justify-content: center;
   gap: 9px;
   color: rgba(246, 228, 182, 0.66);
-  font-size: 0.95rem;
+  font-family: "Libre Franklin", Arial, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .footer-legal a {
@@ -450,6 +468,7 @@ p {
 
   .brand img {
     width: 70px;
+    height: auto;
   }
 
   .nav-link {
@@ -480,7 +499,7 @@ p {
   }
 
   .window-title {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
   }
 
   .window-control {
