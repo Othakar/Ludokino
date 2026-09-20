@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import {
   ArrowRight,
   CirclePlay,
@@ -98,13 +99,13 @@ function Window({ title, children, accent = false, Icon = Monitor }: { title: st
   );
 }
 
-function Navigation() {
+export function Navigation({ activeHref = "/" }: { activeHref?: string }) {
   const links = [
-    ["Accueil", "#", HomeIcon],
-    ["Emissions", "#emissions", Tv],
-    ["Blog", "#articles", Newspaper],
-    ["Goodies", "#goodies", Download],
-    ["À propos", "#about", Info],
+    ["Accueil", "/", HomeIcon],
+    ["Emissions", "/shows", Tv],
+    ["Blog", "/#articles", Newspaper],
+    ["Goodies", "/#goodies", Download],
+    ["À propos", "/#about", Info],
   ] as const;
 
   return (
@@ -114,7 +115,7 @@ function Navigation() {
       </a>
       <div className="nav-links">
         {links.map(([label, href, Icon]) => (
-          <a className={`nav-link pixel-font ${label === "Accueil" ? "active" : ""}`} href={href} key={label}>
+          <a className={`nav-link pixel-font ${href === activeHref ? "active" : ""}`} href={href} key={label}>
             <Icon size={20} aria-hidden="true" />
             <span>{label}</span>
           </a>
@@ -128,6 +129,23 @@ function Navigation() {
         <a href="https://x.com/ludokino" aria-label="X" title="X"><BrandIcon icon={siX} /></a>
       </div>
     </nav>
+  );
+}
+
+export function Footer() {
+  return (
+    <footer className="site-footer">
+      <div className="system-metrics mono-font">
+        <span>CPU: 98%</span>
+        <span>RAM: 512MB</span>
+        <span>OS: LUDOKINO_OS v1.0</span>
+      </div>
+      <p className="footer-legal pixel-font">
+        <span>© 2026 LUDOKINO - TOUS DROITS RÉSERVÉS</span>
+        <span className="footer-divider">|</span>
+        <Link href="/#mentions-legales">Mentions légales</Link>
+      </p>
+    </footer>
   );
 }
 
@@ -207,18 +225,7 @@ export default async function Home() {
           </aside>
         </div>
       </main>
-      <footer className="site-footer">
-        <div className="system-metrics mono-font">
-          <span>CPU: 98%</span>
-          <span>RAM: 512MB</span>
-          <span>OS: LUDOKINO_OS v1.0</span>
-        </div>
-        <p className="footer-legal pixel-font">
-          <span>© 2026 LUDOKINO - TOUS DROITS RÉSERVÉS</span>
-          <span className="footer-divider">|</span>
-          <a href="#mentions-legales">Mentions légales</a>
-        </p>
-      </footer>
+      <Footer />
     </div>
   );
 }
