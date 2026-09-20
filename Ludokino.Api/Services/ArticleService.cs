@@ -60,6 +60,30 @@ public class ArticleService : IArticleService
         return articles.Select(MapSummary).ToList();
     }
 
+    public async Task<ArticleDto?> GetByIdAsync(int id, bool includeDrafts = false)
+    {
+        var query = _context.Articles
+            .AsNoTracking()
+            .Include(a => a.ArticleAuthors)
+                .ThenInclude(aa => aa.User)
+                .ThenInclude(u => u.Role)
+            .Include(a => a.ArticleCategories)
+                .ThenInclude(ac => ac.Category)
+            .Include(a => a.ArticleTags)
+                .ThenInclude(at => at.Tag)
+            .Include(a => a.ArticleEmissions)
+                .ThenInclude(ae => ae.Emission)
+            .AsQueryable();
+
+        if (!includeDrafts)
+        {
+            query = query.Where(a => a.Status == ArticleStatus.Published);
+        }
+
+        var article = await query.FirstOrDefaultAsync(a => a.Id == id);
+        return article is null ? null : MapDetail(article);
+    }
+
     public async Task<ArticleDto?> GetBySlugAsync(string slug, bool includeDrafts = false)
     {
         var query = _context.Articles

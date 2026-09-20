@@ -77,6 +77,29 @@ public class ControllerTests
     }
 
     [Fact]
+    public async Task ArticlesController_GetById_ReturnsArticleForAdminEdit()
+    {
+        var service = new Mock<IArticleService>();
+        service.Setup(item => item.GetByIdAsync(42, true))
+            .ReturnsAsync(new ArticleDto
+            {
+                Id = 42,
+                Slug = "article-42",
+                Title = "Article 42",
+                Content = "Contenu détaillé",
+                Status = "Draft"
+            });
+        var controller = new ArticlesController(service.Object);
+
+        var result = await controller.GetById(42);
+
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var article = Assert.IsType<ArticleDto>(okResult.Value);
+        Assert.Equal(42, article.Id);
+        Assert.Equal("Article 42", article.Title);
+    }
+
+    [Fact]
     public async Task EmissionsController_SynchronizeYoutube_ReturnsSynchronizedCount()
     {
         var syncService = new Mock<IYoutubePlaylistSyncService>();

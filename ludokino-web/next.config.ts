@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 
+const apiOrigin = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
@@ -26,7 +28,7 @@ const nextConfig: NextConfig = {
           "font-src 'self' https://fonts.gstatic.com",
           "img-src 'self' data: blob: https://i.ytimg.com https://img.youtube.com https://i.imgur.com",
           "frame-src https://www.youtube-nocookie.com",
-          "connect-src 'self' https://public.api.bsky.app",
+          `connect-src 'self' ${apiOrigin} https://public.api.bsky.app`,
         ].join("; "),
       },
     ];
