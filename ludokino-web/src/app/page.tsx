@@ -43,6 +43,31 @@ type LatestPost = {
   url: string;
 };
 
+type OmnibusData = {
+  youtubeUrl?: string;
+  playlistUrl?: string | null;
+};
+
+async function getOmnibusEmbedUrl(): Promise<string> {
+  const fallbackPlaylist = "PL13-SWMvlfiwijmK3dQ_rHY67bJj6rJ3P";
+  const apiUrl = process.env.API_URL;
+
+  if (!apiUrl) return `https://www.youtube-nocookie.com/embed/videoseries?list=${fallbackPlaylist}`;
+
+  try {
+    const response = await fetch(`${apiUrl}/api/Emissions/omnibus`, { next: { revalidate: 60 } });
+    if (!response.ok) return `https://www.youtube-nocookie.com/embed/videoseries?list=${fallbackPlaylist}`;
+
+    const omnibus = (await response.json()) as OmnibusData;
+    const videoId = omnibus.youtubeUrl?.match(/[?&]v=([^&]+)/)?.[1];
+    return videoId
+      ? `https://www.youtube-nocookie.com/embed/${videoId}`
+      : `https://www.youtube-nocookie.com/embed/videoseries?list=${fallbackPlaylist}`;
+  } catch {
+    return `https://www.youtube-nocookie.com/embed/videoseries?list=${fallbackPlaylist}`;
+  }
+}
+
 async function getLatestBlueskyPost(): Promise<LatestPost> {
   const fallback = {
     text: "Suivez les dernières actualités de LUDOKINO sur Bluesky",
@@ -162,6 +187,7 @@ export function Footer() {
 
 export default async function Home() {
   const latestPost = await getLatestBlueskyPost();
+  const omnibusEmbedUrl = await getOmnibusEmbedUrl();
 
   return (
     <div>
@@ -180,7 +206,7 @@ export default async function Home() {
         <div className="home-grid">
           <div className="stack">
             <Window title="LES OMNIBUS" Icon={Video}>
-              <iframe className="video-frame" src="https://www.youtube-nocookie.com/embed/videoseries?list=PL13-SWMvlfiwijmK3dQ_rHY67bJj6rJ3P" title="Playlist Omnibus Ludokino" allowFullScreen />
+              <iframe className="video-frame" src={omnibusEmbedUrl} title="Dernière vidéo Omnibus Ludokino" allowFullScreen />
             </Window>
 
             <div className="split-grid">

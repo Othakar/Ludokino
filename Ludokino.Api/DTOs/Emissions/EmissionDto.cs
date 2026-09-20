@@ -9,5 +9,7 @@ public class EmissionDto
     public string Type { get; set; } = string.Empty;
     public string YoutubeUrl { get; set; } = string.Empty;
     public string? PlaylistUrl { get; set; }
+    public string? LatestVideoId { get; set; }
+    public DateTime? LastSyncedAt { get; set; }
     public string? ImageUrl { get; set; }
 }
