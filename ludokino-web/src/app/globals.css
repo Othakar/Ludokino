@@ -64,6 +64,61 @@ p {
   animation: scanline 10s linear infinite;
 }
 
+.crt-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.22;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.06) 0,
+      rgba(255, 255, 255, 0.06) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+  box-shadow:
+    inset 0 0 70px rgba(0, 0, 0, 0.45),
+    inset 0 0 12px rgba(255, 255, 255, 0.12);
+  animation: crt-flicker 7s steps(2, end) infinite;
+}
+
+.crt-overlay::before {
+  position: absolute;
+  inset: -20% 0;
+  content: "";
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 48%,
+    rgba(255, 255, 255, 0.16) 50%,
+    rgba(255, 255, 255, 0.08) 52%,
+    transparent 100%
+  );
+  animation: crt-sweep 8s linear infinite;
+}
+
+.crt-overlay::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: radial-gradient(ellipse at center, transparent 58%, rgba(5, 8, 20, 0.38) 100%);
+}
+
+@keyframes crt-sweep {
+  from { transform: translateY(-35%); }
+  to { transform: translateY(35%); }
+}
+
+@keyframes crt-flicker {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.24; }
+  50.5% { opacity: 0.18; }
+  80% { opacity: 0.22; }
+}
+
 @keyframes scanline {
   from { transform: translateY(0); }
   to { transform: translateY(calc(100vh + 100px)); }
@@ -515,5 +570,13 @@ p {
 
   .system-metrics {
     gap: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scanline,
+  .crt-overlay,
+  .crt-overlay::before {
+    animation: none;
   }
 }

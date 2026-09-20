@@ -87,6 +87,7 @@ export default function Home() {
   return (
     <div>
       <div className="scanline" />
+      <div className="crt-overlay" aria-hidden="true" />
       <Navigation />
       <main className="page-shell">
         <div className="home-grid">
