@@ -38,6 +38,8 @@ public class YoutubePlaylistSyncService : IYoutubePlaylistSyncService
             .Where(e => e.PlaylistUrl != null && e.PlaylistUrl != "")
             .ToListAsync(cancellationToken);
 
+        _logger.LogInformation("{Count} émission(s) avec playlist à synchroniser.", emissions.Count);
+
         var synchronizedCount = 0;
         foreach (var emission in emissions)
         {
@@ -80,7 +82,10 @@ public class YoutubePlaylistSyncService : IYoutubePlaylistSyncService
         }
 
         await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-        var payload = await JsonSerializer.DeserializeAsync<PlaylistItemsResponse>(stream, cancellationToken: cancellationToken);
+        var payload = await JsonSerializer.DeserializeAsync<PlaylistItemsResponse>(
+            stream,
+            new JsonSerializerOptions(JsonSerializerDefaults.Web),
+            cancellationToken);
 
         return payload?.Items?
             .Where(item => !string.IsNullOrWhiteSpace(item.Snippet?.ResourceId?.VideoId))
@@ -96,9 +101,13 @@ public class YoutubePlaylistSyncService : IYoutubePlaylistSyncService
             return null;
         }
 
-        var playlistId = QueryHelpers.ParseQuery(uri.Query).TryGetValue("list", out var values)
-            ? values.FirstOrDefault()
-            : null;
+        var values = QueryHelpers.ParseQuery(uri.Query);
+        if (!values.TryGetValue("list", out var playlistValue))
+        {
+            return null;
+        }
+
+        var playlistId = playlistValue.ToString().Trim();
         return string.IsNullOrWhiteSpace(playlistId) ? null : playlistId;
     }
 
