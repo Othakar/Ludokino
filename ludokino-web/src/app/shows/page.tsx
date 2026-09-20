@@ -99,7 +99,7 @@ export default async function ShowsPage() {
         </div>
         <div className="shows-grid">
           {emissions.map((emission) => (
-            <Window title={emission.name} key={emission.id}>
+            <Window title={emission.name} key={emission.slug}>
               <article className="show-card">
                 <div className={`show-thumb ${emission.imageUrl ? "has-image" : ""}`}>
                   {emission.imageUrl && (
