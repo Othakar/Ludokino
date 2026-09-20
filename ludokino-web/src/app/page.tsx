@@ -70,9 +70,9 @@ function Navigation() {
         ))}
       </div>
       <div className="social-links" aria-label="Réseaux sociaux">
-        <a href="https://bsky.app/profile/ludokino.net" aria-label="Bluesky"><BrandIcon icon={siBluesky} /></a>
-        <a href="https://www.twitch.tv/ludokino" aria-label="Twitch"><BrandIcon icon={siTwitch} /></a>
-        <a href="https://www.youtube.com/@ldkino" aria-label="YouTube"><BrandIcon icon={siYoutube} /></a>
+        <a href="https://bsky.app/profile/ludokino.net" aria-label="Bluesky" title="Bluesky"><BrandIcon icon={siBluesky} /></a>
+        <a href="https://www.twitch.tv/ludokino" aria-label="Twitch" title="Twitch"><BrandIcon icon={siTwitch} /></a>
+        <a href="https://www.youtube.com/@ldkino" aria-label="YouTube" title="YouTube"><BrandIcon icon={siYoutube} /></a>
       </div>
     </nav>
   );
@@ -156,6 +156,6 @@ export default function Home() {
           <a href="#mentions-legales">Mentions légales</a>
         </p>
       </footer>
-          <a href="https://bsky.app/profile/ludokino.net" aria-label="Bluesky" title="Bluesky"><BrandIcon icon={siBluesky} /></a>
-          <a href="https://www.twitch.tv/ludokino" aria-label="Twitch" title="Twitch"><BrandIcon icon={siTwitch} /></a>
-          <a href="https://www.youtube.com/@ldkino" aria-label="YouTube" title="YouTube"><BrandIcon icon={siYoutube} /></a>
+    </div>
+  );
+}
