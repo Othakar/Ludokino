@@ -131,6 +131,11 @@ p {
   transform: translateY(-2px);
 }
 
+.brand-icon {
+  display: block;
+  fill: currentColor;
+}
+
 .page-shell {
   width: min(1320px, calc(100% - 32px));
   margin: 0 auto;

@@ -1,19 +1,18 @@
 import Image from "next/image";
 import {
   ArrowRight,
-  Camera,
   CirclePlay,
   Download,
   Home as HomeIcon,
   Info,
   Monitor,
   Newspaper,
-  Radio,
   Tv,
   Video,
   Zap,
   type LucideIcon,
 } from "lucide-react";
+import { siBluesky, siInstagram, siTiktok, siTwitch, siX, siYoutube } from "simple-icons";
 
 const shows = [
   ["Monthly Wave", "L'émission musicale mensuelle qui explore les pépites sonores et les classiques oubliés."],
@@ -28,6 +27,16 @@ const articles = [
   ["9 AOÛT 2026 À 16H00", "3 FILMS TOKU POUR CET ÉTÉ", "Ultraman The Next, Gamera Vs Guiron et The Calamari Wrestler."],
   ["8 AOÛT 2026 À 18H30", "YOSHIKI ET KYARY PAMYU PAMYU", "LUDOKINO au plus près des grands artistes japonais à Japan Expo 2026."],
 ];
+
+type BrandIconData = { path: string };
+
+function BrandIcon({ icon, size = 22 }: { icon: BrandIconData; size?: number }) {
+  return (
+    <svg className="brand-icon" width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
+      <path d={icon.path} />
+    </svg>
+  );
+}
 
 function Window({ title, children, accent = false, Icon = Monitor }: { title: string; children: React.ReactNode; accent?: boolean; Icon?: LucideIcon }) {
   return (
@@ -66,9 +75,9 @@ function Navigation() {
         ))}
       </div>
       <div className="social-links" aria-label="Réseaux sociaux">
-        <a href="https://www.youtube.com/@ldkino" aria-label="YouTube"><Video size={19} /></a>
-        <a href="https://www.twitch.tv/ludokino" aria-label="Twitch"><Radio size={19} /></a>
-        <a href="https://www.instagram.com/ludokino_/" aria-label="Instagram"><Camera size={19} /></a>
+        <a href="https://www.youtube.com/@ldkino" aria-label="YouTube"><BrandIcon icon={siYoutube} /></a>
+        <a href="https://www.twitch.tv/ludokino" aria-label="Twitch"><BrandIcon icon={siTwitch} /></a>
+        <a href="https://www.instagram.com/ludokino_/" aria-label="Instagram"><BrandIcon icon={siInstagram} /></a>
       </div>
     </nav>
   );
@@ -101,10 +110,12 @@ export default function Home() {
 
               <Window title="LIENS RAPIDES" Icon={Zap}>
                 <div className="quick-links">
-                  <a className="quick-link" href="https://www.youtube.com/@ldkino"><Video size={29} /><span>YouTube</span></a>
-                  <a className="quick-link" href="https://www.twitch.tv/ludokino"><Radio size={29} /><span>Twitch</span></a>
-                  <a className="quick-link" href="https://www.instagram.com/ludokino_/"><Camera size={29} /><span>Instagram</span></a>
-                  <a className="quick-link" href="https://bsky.app/profile/ludokino.net"><span className="pixel-font" aria-hidden="true">◎</span><span>Bluesky</span></a>
+                  <a className="quick-link" href="https://www.youtube.com/@ldkino"><BrandIcon icon={siYoutube} size={29} /><span>YouTube</span></a>
+                  <a className="quick-link" href="https://www.twitch.tv/ludokino"><BrandIcon icon={siTwitch} size={29} /><span>Twitch</span></a>
+                  <a className="quick-link" href="https://www.instagram.com/ludokino_/"><BrandIcon icon={siInstagram} size={29} /><span>Instagram</span></a>
+                  <a className="quick-link" href="https://bsky.app/profile/ludokino.net"><BrandIcon icon={siBluesky} size={29} /><span>Bluesky</span></a>
+                  <a className="quick-link" href="https://www.tiktok.com/@ludokino"><BrandIcon icon={siTiktok} size={29} /><span>TikTok</span></a>
+                  <a className="quick-link" href="https://x.com/ludokino"><BrandIcon icon={siX} size={29} /><span>X</span></a>
                 </div>
               </Window>
             </div>
