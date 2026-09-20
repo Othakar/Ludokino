@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Ludokino.Api.Validation;
 
 namespace Ludokino.Api.DTOs.Articles;
 
@@ -12,6 +13,7 @@ public class CreateArticleRequest
     public string Content { get; set; } = string.Empty;
     [Url]
     public string? CoverImageUrl { get; set; }
+    [HttpUrlList]
     public List<string> ImageUrls { get; set; } = new();
     [Url]
     public string? VideoUrl { get; set; }

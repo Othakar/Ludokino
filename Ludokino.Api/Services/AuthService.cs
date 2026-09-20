@@ -4,6 +4,7 @@ using System.Text;
 using BCrypt.Net;
 using Ludokino.Api.Data;
 using Ludokino.Api.DTOs.Auth;
+using Ludokino.Api.Security;
 using Ludokino.Api.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -87,25 +88,10 @@ public class AuthService : IAuthService
 
     private string GenerateJwtToken(Ludokino.Api.Models.User user)
     {
-        var jwtSettings = _configuration.GetSection("JwtSettings");
-        var secretKey = jwtSettings["SecretKey"]?.Trim();
-        var issuer = jwtSettings["Issuer"]?.Trim();
-        var audience = jwtSettings["Audience"]?.Trim();
-
-        if (string.IsNullOrWhiteSpace(secretKey) ||
-            string.IsNullOrWhiteSpace(issuer) ||
-            string.IsNullOrWhiteSpace(audience))
-        {
-            throw new InvalidOperationException("JwtSettings (SecretKey, Issuer, Audience) doit être configuré.");
-        }
-
-        if (secretKey.Length < 32)
-        {
-            throw new InvalidOperationException("JwtSettings:SecretKey doit contenir au moins 32 caractères.");
-        }
+        var jwtConfiguration = StartupSecurityValidator.GetJwtConfiguration(_configuration);
 
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.UTF8.GetBytes(secretKey);
+        var key = Encoding.UTF8.GetBytes(jwtConfiguration.SecretKey);
 
         var claims = new List<Claim>
         {
@@ -119,8 +105,8 @@ public class AuthService : IAuthService
         {
             Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddDays(1),
-            Issuer = issuer,
-            Audience = audience,
+            Issuer = jwtConfiguration.Issuer,
+            Audience = jwtConfiguration.Audience,
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256Signature)

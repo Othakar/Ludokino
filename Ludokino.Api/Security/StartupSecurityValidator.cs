@@ -32,6 +32,18 @@ public static class StartupSecurityValidator
 
     public static JwtConfiguration GetJwtConfiguration(IConfiguration configuration, IHostEnvironment environment)
     {
+        try
+        {
+            return GetJwtConfiguration(configuration);
+        }
+        catch (InvalidOperationException ex) when (environment.IsProduction())
+        {
+            throw new InvalidOperationException($"Configuration JWT invalide en production: {ex.Message}", ex);
+        }
+    }
+
+    public static JwtConfiguration GetJwtConfiguration(IConfiguration configuration)
+    {
         var jwtSettings = configuration.GetSection("JwtSettings");
         var secretKey = jwtSettings["SecretKey"]?.Trim();
         var issuer = jwtSettings["Issuer"]?.Trim();
@@ -41,12 +53,7 @@ public static class StartupSecurityValidator
             string.IsNullOrWhiteSpace(issuer) ||
             string.IsNullOrWhiteSpace(audience))
         {
-            if (!environment.IsProduction())
-            {
-                throw new InvalidOperationException("JwtSettings (SecretKey, Issuer, Audience) doit être configuré.");
-            }
-
-            throw new InvalidOperationException("JwtSettings (SecretKey, Issuer, Audience) est obligatoire en production.");
+            throw new InvalidOperationException("JwtSettings (SecretKey, Issuer, Audience) doit être configuré.");
         }
 
         if (secretKey.Length < 32)
