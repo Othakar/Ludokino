@@ -31,6 +31,10 @@ function isEmission(value: unknown): value is Emission {
   );
 }
 
+function getImageUrl(value?: string | null) {
+  return value ? `/api/image?url=${encodeURIComponent(value)}` : "";
+}
+
 async function getEmissions(): Promise<Emission[]> {
   const apiUrl = process.env.API_URL ?? (process.env.NODE_ENV === "development" ? "http://localhost:5000" : undefined);
   const fallback = process.env.NODE_ENV === "development" ? fallbackShows : [];
@@ -104,7 +108,7 @@ export default async function ShowsPage() {
                 <div className={`show-thumb ${emission.imageUrl ? "has-image" : ""}`}>
                   {emission.imageUrl && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={emission.imageUrl} alt={`Miniature de ${emission.name}`} />
+                    <img src={getImageUrl(emission.imageUrl)} alt={`Miniature de ${emission.name}`} />
                   )}
                   <span className="show-thumb-play">
                     <PlayCircle size={46} aria-hidden="true" />
