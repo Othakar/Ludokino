@@ -14,6 +14,8 @@ public class ArticleDto
     public string Excerpt { get; set; } = string.Empty;
     public string Content { get; set; } = string.Empty;
     public string? CoverImageUrl { get; set; }
+    public List<string> ImageUrls { get; set; } = new();
+    public string? VideoUrl { get; set; }
     public bool IsFeatured { get; set; }
     public string Status { get; set; } = string.Empty;
     public DateTime? PublishedAt { get; set; }

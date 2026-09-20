@@ -1,5 +1,7 @@
 using Ludokino.Api.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Text.Json;
 
 namespace Ludokino.Api.Data;
 
@@ -46,6 +48,19 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Article>()
             .HasIndex(a => a.Slug)
             .IsUnique();
+
+        modelBuilder.Entity<Article>()
+            .Property(a => a.ImageUrls)
+            .HasColumnType("jsonb")
+            .HasConversion(
+                value => JsonSerializer.Serialize(value, (JsonSerializerOptions?)null),
+                value => string.IsNullOrWhiteSpace(value)
+                    ? new List<string>()
+                    : JsonSerializer.Deserialize<List<string>>(value, (JsonSerializerOptions?)null) ?? new List<string>())
+            .Metadata.SetValueComparer(new ValueComparer<List<string>>(
+                (left, right) => left != null && right != null && left.SequenceEqual(right),
+                value => value.Aggregate(0, (hash, item) => HashCode.Combine(hash, item.GetHashCode())),
+                value => value.ToList()));
 
         modelBuilder.Entity<ArticleAuthor>()
             .HasOne(aa => aa.Article)

@@ -9,6 +9,8 @@ public class ArticleSummaryDto
     public string Slug { get; set; } = string.Empty;
     public string Excerpt { get; set; } = string.Empty;
     public string? CoverImageUrl { get; set; }
+    public List<string> ImageUrls { get; set; } = new();
+    public string? VideoUrl { get; set; }
     public string? PublishedAt { get; set; }
     public List<string> Tags { get; set; } = new();
     public List<string> Categories { get; set; } = new();

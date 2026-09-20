@@ -65,7 +65,9 @@ URLs locales :
 - API : selon l'URL affichée par ASP.NET Core
 - Swagger : `<url-api>/swagger` en environnement Development
 
-L'API applique les migrations EF Core au démarrage avant le seed initial.
+L'API applique les migrations EF Core au démarrage avant le seed initial. Les galeries d'articles sont stockées en PostgreSQL `jsonb` et les migrations convertissent les anciennes valeurs texte sans perte.
+
+Le frontend expose les routes `/blog` et `/blog/{slug}`. Les articles peuvent contenir une couverture, une galerie d'images, une vidéo YouTube et un contenu Markdown rendu côté frontend.
 
 ## Configuration de production
 
@@ -83,6 +85,8 @@ Youtube__SyncIntervalMinutes
 ```
 
 La synchronisation YouTube est exécutée côté API uniquement. La clé API ne doit jamais être exposée au frontend.
+
+Les images externes des articles sont servies via la route frontend `/api/image`, limitée aux domaines d'images autorisés.
 
 ## Vérification locale
 

@@ -118,6 +118,8 @@ public class ArticleService : IArticleService
             Excerpt = request.Excerpt ?? string.Empty,
             Content = request.Content ?? string.Empty,
             CoverImageUrl = request.CoverImageUrl,
+            ImageUrls = request.ImageUrls ?? new List<string>(),
+            VideoUrl = request.VideoUrl,
             IsFeatured = request.IsFeatured,
             Status = status,
             PublishedAt = status == ArticleStatus.Published ? DateTime.UtcNow : null,
@@ -156,6 +158,8 @@ public class ArticleService : IArticleService
         if (request.Excerpt is not null) article.Excerpt = request.Excerpt;
         if (request.Content is not null) article.Content = request.Content;
         if (request.CoverImageUrl is not null) article.CoverImageUrl = request.CoverImageUrl;
+        if (request.ImageUrls is not null) article.ImageUrls = request.ImageUrls.Distinct().ToList();
+        if (request.VideoUrl is not null) article.VideoUrl = request.VideoUrl;
         if (request.IsFeatured.HasValue) article.IsFeatured = request.IsFeatured.Value;
         if (!string.IsNullOrWhiteSpace(request.Status))
         {
@@ -346,6 +350,8 @@ public class ArticleService : IArticleService
             Slug = article.Slug,
             Excerpt = article.Excerpt,
             CoverImageUrl = article.CoverImageUrl,
+            ImageUrls = article.ImageUrls,
+            VideoUrl = article.VideoUrl,
             PublishedAt = article.PublishedAt?.ToString("O"),
             Tags = article.ArticleTags.Select(at => at.Tag.Name).ToList(),
             Categories = article.ArticleCategories.Select(ac => ac.Category.Name).ToList(),
@@ -375,6 +381,8 @@ public class ArticleService : IArticleService
             Excerpt = article.Excerpt,
             Content = article.Content,
             CoverImageUrl = article.CoverImageUrl,
+            ImageUrls = article.ImageUrls,
+            VideoUrl = article.VideoUrl,
             IsFeatured = article.IsFeatured,
             Status = article.Status.ToString(),
             PublishedAt = article.PublishedAt,

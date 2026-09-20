@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, Tag } from "lucide-react";
+import { Hash, Layers3, Tag } from "lucide-react";
 import { Footer, Navigation, Window } from "../page";
 
 type Article = {
@@ -43,7 +43,27 @@ function formatDate(value?: string | null) {
   return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(value));
 }
 
-export default async function BlogPage({ searchParams }: { searchParams: Promise<{ tag?: string; category?: string }> }) {
+function getImageUrl(value?: string | null) {
+  return value ? `/api/image?url=${encodeURIComponent(value)}` : "";
+}
+
+function getRandomTags(tags: string[], selectedTag?: string) {
+  const selectedTagValue = tags.find((tag) => tag.toLowerCase() === selectedTag);
+  const remainingTags = tags.filter((tag) => tag !== selectedTagValue);
+
+  for (let index = remainingTags.length - 1; index > 0; index--) {
+    const randomIndex = Math.floor(Math.random() * (index + 1));
+    [remainingTags[index], remainingTags[randomIndex]] = [remainingTags[randomIndex], remainingTags[index]];
+  }
+
+  const selectedTags = selectedTagValue
+    ? [selectedTagValue, ...remainingTags.slice(0, 11)]
+    : remainingTags.slice(0, 12);
+
+  return selectedTags.sort((left, right) => left.localeCompare(right, "fr", { sensitivity: "base" }));
+}
+
+export default async function BlogPage({ searchParams }: { searchParams: Promise<{ tag?: string; category?: string; tags?: string }> }) {
   const [articles, params] = await Promise.all([getArticles(), searchParams]);
   const selectedTag = params.tag?.trim().toLowerCase();
   const selectedCategory = params.category?.trim().toLowerCase();
@@ -54,6 +74,12 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
   });
   const tags = [...new Set(articles.flatMap((article) => article.tags))].sort();
   const categories = [...new Set(articles.flatMap((article) => article.categories))].sort();
+  const showAllTags = params.tags === "all";
+  const visibleTags = showAllTags ? tags : getRandomTags(tags, selectedTag);
+  const tagsQuery = selectedCategory ? `&category=${encodeURIComponent(params.category ?? "")}` : "";
+  const allTagsHref = showAllTags
+    ? (selectedCategory ? `/blog?category=${encodeURIComponent(params.category ?? "")}` : "/blog")
+    : `/blog?tags=all${tagsQuery}`;
 
   return (
     <div>
@@ -61,31 +87,40 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
       <div className="crt-overlay" aria-hidden="true" />
       <Navigation activeHref="/blog" />
       <main className="page-shell blog-page">
-        <div className="blog-heading-row">
-          <Link className="text-link" href="/"><ArrowLeft size={16} />Retour à l&apos;accueil</Link>
-          <span className="pixel-font">LUDOKINO / BLOG</span>
-        </div>
         <div className="shows-intro">
           <p className="eyebrow mono-font">PUBLICATIONS / ARCHIVE</p>
           <h1 className="shows-heading pixel-font">DERNIERS ARTICLES</h1>
           <p>Retrouvez les articles publiés et filtrez-les par thème.</p>
         </div>
-        <Window title="FILTRES" Icon={Tag}>
-          <div className="blog-filters">
-            <Link className={!selectedTag && !selectedCategory ? "filter-chip active" : "filter-chip"} href="/blog">Tous</Link>
-            {categories.map((category) => <Link className={selectedCategory === category.toLowerCase() ? "filter-chip active" : "filter-chip"} href={`/blog?category=${encodeURIComponent(category)}`} key={`category-${category}`}>{category}</Link>)}
-            {tags.map((tag) => <Link className={selectedTag === tag.toLowerCase() ? "filter-chip active" : "filter-chip"} href={`/blog?tag=${encodeURIComponent(tag)}`} key={`tag-${tag}`}>{tag}</Link>)}
+        <div className="blog-filters">
+          <div className="filter-group filter-group-categories">
+            <div className="filter-group-heading"><Layers3 size={15} /> <span className="mono-font">CATÉGORIES</span></div>
+            <div className="filter-options">
+              <Link className={!selectedTag && !selectedCategory ? "filter-chip active" : "filter-chip"} href="/blog"><Layers3 size={15} />Toutes catégories</Link>
+              {categories.map((category) => <Link className={selectedCategory === category.toLowerCase() ? "filter-chip active" : "filter-chip"} href={`/blog?category=${encodeURIComponent(category)}`} key={`category-${category}`}><Layers3 size={15} />{category}</Link>)}
+            </div>
           </div>
-        </Window>
+          <div className="filter-group filter-group-tags">
+            <div className="filter-group-heading"><Hash size={15} /> <span className="mono-font">TAGS</span></div>
+            <div className="filter-options">
+                <Link className={showAllTags ? "filter-chip active" : "filter-chip"} href={allTagsHref}><Tag size={14} />{showAllTags ? "Réduire les tags" : "Tous les tags"}</Link>
+              {visibleTags.map((tag) => <Link className={selectedTag === tag.toLowerCase() ? "filter-chip active" : "filter-chip"} href={`/blog?tag=${encodeURIComponent(tag)}${tagsQuery}`} key={`tag-${tag}`}><Tag size={14} />{tag}</Link>)}
+            </div>
+          </div>
+        </div>
         <div className="blog-grid">
           {filteredArticles.map((article) => (
-            <Window title={article.categories[0] || "ARTICLE"} key={article.slug}>
+            <Window title={article.categories[0] || article.tags[0] || "ARTICLE"} key={article.slug}>
               <article className="blog-card">
                 {article.coverImageUrl && (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={article.coverImageUrl} alt={`Illustration de ${article.title}`} />
+                  <img src={getImageUrl(article.coverImageUrl)} alt={`Illustration de ${article.title}`} />
                 )}
                 <div className="blog-card-meta mono-font">{formatDate(article.publishedAt)}</div>
+                <div className="article-taxonomy" aria-label="Catégorie et tags">
+                  {article.categories.map((category) => <Link href={`/blog?category=${encodeURIComponent(category)}`} key={`category-${category}`}>{category}</Link>)}
+                  {article.tags.map((tag) => <Link href={`/blog?tag=${encodeURIComponent(tag)}`} key={`tag-${tag}`}>#{tag}</Link>)}
+                </div>
                 <h2 className="blog-card-title">{article.title}</h2>
                 <p>{article.excerpt}</p>
                 <Link className="pixel-button" href={`/blog/${article.slug}`}>Lire l&apos;article</Link>

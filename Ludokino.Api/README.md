@@ -55,6 +55,14 @@ Au démarrage, l'API :
 2. crée le schéma si nécessaire;
 3. exécute le seed initial des rôles et utilisateurs.
 
+Les articles exposent les champs médias suivants :
+
+- `CoverImageUrl` : image principale ;
+- `ImageUrls` : galerie sérialisée en colonne PostgreSQL `jsonb` ;
+- `VideoUrl` : vidéo associée à l'article.
+
+La migration `StoreArticleGalleryAsJsonb` convertit les anciennes galeries texte en conservant leur contenu et gère les valeurs vides avec `[]`.
+
 Commandes EF Core :
 
 ```powershell
