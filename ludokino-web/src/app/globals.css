@@ -240,7 +240,7 @@ p {
 }
 
 @keyframes ticker-scroll {
-  0%, 16.666% { transform: translateX(0); }
+  0%, 16.666% { transform: translateX(100vw); }
   to { transform: translateX(calc(-50% - 50vw)); }
 }
 
