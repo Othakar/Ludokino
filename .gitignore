@@ -24,6 +24,7 @@
 
 # Documentation Markdown kept locally
 *.md
+!/README.md
 
 # Local agent and workspace tooling
 .agents/
