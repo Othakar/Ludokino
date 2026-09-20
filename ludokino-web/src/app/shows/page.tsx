@@ -6,12 +6,12 @@ const fallbackShows = [
   { id: 2, name: "TOKUKINO", slug: "tokukino", description: "Héros en spandex moulant, monstres géants et explosions : le format consacré au tokusatsu.", type: "Tokusatsu", youtubeUrl: "https://www.youtube.com/playlist?list=PL13-SWMvlfix9cWf78JWzGAdsksUj4MuR", imageUrl: null },
   { id: 3, name: "arka-TECH", slug: "arka-tech", description: "Redécouvre la high-tech de la fin des années 90 et du début des années 2000.", type: "Tech", youtubeUrl: "https://www.youtube.com/playlist?list=PL13-SWMvlfiz2XSS9Z2N6RNfVpluRk_yT", imageUrl: null },
   { id: 4, name: "UNE DE MES JAPANIMATIONS", slug: "une-de-mes-japanimations", description: "Kagano met en avant des œuvres d'animation japonaise, les bonnes comme les mauvaises.", type: "Animation", youtubeUrl: "https://www.youtube.com/playlist?list=PL13-SWMvlfixjwSVuDGfQplh3jBj46Jg1", imageUrl: null },
-  { id: 5, name: "TOONFLASH", slug: "toonflash", description: "Une pastille qui recommande les œuvres animées du moment.", type: "Animation", youtubeUrl: "https://www.youtube.com/playlist?list=PLYP9p4UelR2QqwIDScjeXGzxSQAuxtOUC", imageUrl: null },
+  { id: 5, name: "TOONFLASH", slug: "toonflash", description: "Une pastille qui recommande les œuvres animées du moment.", type: "Animation", youtubeUrl: "https://www.youtube.com/playlist?list=PLYP9p4UelR2QqwIDScjeXGzxSQAuxtOUC", imageUrl: "https://i.ytimg.com/vi/Wcs7VgFdQUg/maxresdefault.jpg" },
   { id: 6, name: "OMNIBUS", slug: "omnibus", description: "Le magazine mensuel de LUDOKINO, avec toutes les émissions et quelques exclusivités.", type: "Magazine", youtubeUrl: "https://www.youtube.com/playlist?list=PL13-SWMvlfiwijmK3dQ_rHY67bJj6rJ3P", imageUrl: null },
   { id: 7, name: "In Paris", slug: "in-paris", description: "Wendöh et VincenTimes cherchent le meilleur sandwich merguez dans Paris et parlent de tout et de rien.", type: "Culture", youtubeUrl: "https://www.youtube.com/playlist?list=PL13-SWMvlfix9dXj9wNYqGCyAQbdHmPJf", imageUrl: null },
-  { id: 8, name: "Critique Contemporaine", slug: "critique-contemporaine", description: "La critique du jeu qui vient de sortir. À chaud, sans filtre.", type: "Jeu vidéo", youtubeUrl: "https://www.youtube.com/playlist?list=PL13-SWMvlfixBk5H2gNH1Q8QugDhyQ75_", imageUrl: null },
-  { id: 9, name: "Critique Flashback", slug: "critique-flashback", description: "Retour sur les jeux sortis avant l'ère Xbox 360 et PlayStation 3.", type: "Jeu vidéo", youtubeUrl: "https://www.youtube.com/playlist?list=PL13-SWMvlfixcLLe3_zcB7Ow1a9p9K4th", imageUrl: null },
-  { id: 10, name: "Dossiers", slug: "dossiers", description: "Des vidéos sur des sujets spécifiques qui n'entrent dans aucune case.", type: "Dossier", youtubeUrl: "https://www.youtube.com/playlist?list=PL13-SWMvlfiwbUkhTXT7oMmNl8y5haJ6q", imageUrl: null },
+  { id: 8, name: "Critique Contemporaine", slug: "critique-contemporaine", description: "La critique du jeu qui vient de sortir. À chaud, sans filtre.", type: "Jeu vidéo", youtubeUrl: "https://www.youtube.com/playlist?list=PLYP9p4UelR2QqwIDScjeXGzxSQAuxtOUC", imageUrl: "https://i.ytimg.com/vi/Wcs7VgFdQUg/maxresdefault.jpg" },
+  { id: 9, name: "Critiques", slug: "critiques", description: "Les critiques de jeux vidéo, anciennes comme récentes.", type: "Jeu vidéo", youtubeUrl: "https://www.youtube.com/playlist?list=PL13-SWMvlfixcLLe3_zcB7Ow1a9p9K4th", imageUrl: "https://i.ytimg.com/vi/-JeVz9cXCmU/maxresdefault.jpg" },
+  { id: 10, name: "Dossier", slug: "dossier", description: "Des vidéos sur des sujets spécifiques qui n'entrent dans aucune case.", type: "Dossier", youtubeUrl: "https://www.youtube.com/playlist?list=PL13-SWMvlfiwbUkhTXT7oMmNl8y5haJ6q", imageUrl: "https://i.ytimg.com/vi/LNPI_5lW4dE/maxresdefault.jpg" },
 ];
 
 type Emission = (typeof fallbackShows)[number];
@@ -29,6 +29,10 @@ function isEmission(value: unknown): value is Emission {
     isSafeYoutubeUrl(emission.youtubeUrl) &&
     (emission.imageUrl === null || typeof emission.imageUrl === "string")
   );
+}
+
+function getImageUrl(value?: string | null) {
+  return value ? `/api/image?url=${encodeURIComponent(value)}` : "";
 }
 
 async function getEmissions(): Promise<Emission[]> {
@@ -104,7 +108,7 @@ export default async function ShowsPage() {
                 <div className={`show-thumb ${emission.imageUrl ? "has-image" : ""}`}>
                   {emission.imageUrl && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={emission.imageUrl} alt={`Miniature de ${emission.name}`} />
+                    <img src={getImageUrl(emission.imageUrl)} alt={`Miniature de ${emission.name}`} />
                   )}
                   <span className="show-thumb-play">
                     <PlayCircle size={46} aria-hidden="true" />

@@ -25,6 +25,7 @@ En production, `API_URL` doit pointer vers l'API publique. Si elle est absente e
 ```powershell
 npm --prefix ludokino-web run dev
 npm --prefix ludokino-web run lint
+npm --prefix ludokino-web run smoke
 npm --prefix ludokino-web run build
 npm --prefix ludokino-web run start
 ```
@@ -72,3 +73,5 @@ Les ressources placées dans `public/` sont publiques par définition. Ne jamais
 La page `/blog` consomme `GET ${API_URL}/api/Articles?page=1&pageSize=30`. Les catégories et tags sont filtrables séparément ; douze tags sont affichés dans la vue compacte et le bouton `Tous les tags` ouvre ou réduit la liste complète.
 
 La page détail rend le contenu Markdown avec `react-markdown`. Les URLs d'images provenant de l'API sont chargées via `/api/image`, qui n'accepte que les hôtes d'images configurés dans la route.
+
+Le smoke test `npm run smoke` vérifie les endpoints API des émissions et articles, les routes `/shows` et `/blog/{slug}`, ainsi que le proxy des miniatures. Les URLs peuvent être remplacées avec `API_URL` et `WEB_URL`.

@@ -15,19 +15,25 @@ import {
 } from "lucide-react";
 import { siBluesky, siInstagram, siTiktok, siTwitch, siX, siYoutube } from "simple-icons";
 
-const shows = [
-  ["Monthly Wave", "L'émission musicale mensuelle qui explore les pépites sonores et les classiques oubliés."],
-  ["TOKUKINO", "Héros en spandex moulant, monstres géants et explosions : notre format tokusatsu."],
-  ["arka-TECH", "La high-tech de la fin des années 90 et du début des années 2000."],
-  ["UNE DE MES JAPANIMATIONS", "Les œuvres d'animation japonaise, les bonnes comme les mauvaises."],
-  ["TOONFLASH", "Une pastille qui recommande les œuvres animées du moment."],
-  ["OMNIBUS", "Le magazine mensuel qui mélange toutes les émissions et quelques exclusivités."],
-];
+type HomeArticle = {
+  title: string;
+  slug: string;
+  excerpt: string;
+  coverImageUrl?: string | null;
+  publishedAt?: string | null;
+  categories: string[];
+};
 
-const articles = [
-  ["9 AOÛT 2026 À 16H00", "3 FILMS TOKU POUR CET ÉTÉ", "Ultraman The Next, Gamera Vs Guiron et The Calamari Wrestler."],
-  ["8 AOÛT 2026 À 18H30", "YOSHIKI ET KYARY PAMYU PAMYU", "LUDOKINO au plus près des grands artistes japonais à Japan Expo 2026."],
-];
+type HomeEmission = {
+  name: string;
+  slug: string;
+  description: string;
+  type: string;
+  youtubeUrl: string;
+  playlistUrl?: string | null;
+  imageUrl?: string | null;
+  lastSyncedAt?: string | null;
+};
 
 type BlueskyFeedItem = {
   reason?: unknown;
@@ -47,6 +53,47 @@ type OmnibusData = {
   youtubeUrl?: string;
   playlistUrl?: string | null;
 };
+
+function getApiUrl() {
+  return process.env.API_URL ?? (process.env.NODE_ENV === "development" ? "http://localhost:5000" : undefined);
+}
+
+async function getLatestArticles(): Promise<HomeArticle[]> {
+  const apiUrl = getApiUrl();
+  if (!apiUrl) return [];
+
+  try {
+    const response = await fetch(`${apiUrl}/api/Articles?page=1&pageSize=2`, { next: { revalidate: 60 } });
+    if (!response.ok) return [];
+    const data = (await response.json()) as HomeArticle[];
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
+}
+
+async function getLatestEmissions(): Promise<HomeEmission[]> {
+  const apiUrl = getApiUrl();
+  if (!apiUrl) return [];
+
+  try {
+    const response = await fetch(`${apiUrl}/api/Emissions`, { next: { revalidate: 60 } });
+    if (!response.ok) return [];
+    const data = (await response.json()) as HomeEmission[];
+    return Array.isArray(data)
+      ? data
+        .sort((left, right) => (right.lastSyncedAt ?? "").localeCompare(left.lastSyncedAt ?? ""))
+        .slice(0, 6)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function formatArticleDate(value?: string | null) {
+  if (!value) return "DATE INCONNUE";
+  return new Intl.DateTimeFormat("fr-FR", { dateStyle: "medium" }).format(new Date(value)).toUpperCase();
+}
 
 async function getOmnibusEmbedUrl(): Promise<string> {
   const fallbackPlaylist = "PL13-SWMvlfiwijmK3dQ_rHY67bJj6rJ3P";
@@ -188,6 +235,7 @@ export function Footer() {
 export default async function Home() {
   const latestPost = await getLatestBlueskyPost();
   const omnibusEmbedUrl = await getOmnibusEmbedUrl();
+  const [articles, shows] = await Promise.all([getLatestArticles(), getLatestEmissions()]);
 
   return (
     <div>
@@ -211,12 +259,12 @@ export default async function Home() {
 
             <div className="split-grid">
               <Window title="DERNIERS ARTICLES" Icon={Newspaper}>
-                {articles.map(([date, title, excerpt]) => (
-                  <article className="article-item" key={title}>
-                    <p className="eyebrow mono-font">{date} — NEWS</p>
-                    <h2 className="article-title pixel-font">{title}</h2>
-                    <p className="article-excerpt">{excerpt}</p>
-                    <Link className="text-link" href="/blog">Lire l&apos;article <ArrowRight size={15} /></Link>
+                {articles.map((article) => (
+                  <article className="article-item" key={article.slug}>
+                    <p className="eyebrow mono-font">{formatArticleDate(article.publishedAt)} — {article.categories[0] ?? "ARTICLE"}</p>
+                    <h2 className="article-title pixel-font">{article.title}</h2>
+                    <p className="article-excerpt">{article.excerpt}</p>
+                    <Link className="text-link" href={`/blog/${article.slug}`}>Lire l&apos;article <ArrowRight size={15} /></Link>
                   </article>
                 ))}
                 <Link className="pixel-button" href="/blog">Tous les articles</Link>
@@ -247,12 +295,13 @@ export default async function Home() {
 
             <Window title="NOS ÉMISSIONS" Icon={CirclePlay}>
               <div className="show-list">
-                {shows.map(([title, description]) => (
-                  <a className="show-item" href="#emissions" key={title}>
-                    <h2 className="show-name">{title}</h2>
-                    <p className="show-description">{description}</p>
+                {shows.map((show) => (
+                  <a className="show-item" href={show.playlistUrl || show.youtubeUrl} target="_blank" rel="noreferrer" key={show.slug}>
+                    <h2 className="show-name">{show.name}</h2>
+                    <p className="show-description">{show.description}</p>
                   </a>
                 ))}
+                {shows.length === 0 && <p className="shows-empty">Aucune émission disponible.</p>}
               </div>
             </Window>
 

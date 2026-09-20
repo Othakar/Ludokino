@@ -81,7 +81,10 @@ public class YoutubePlaylistSyncService : IYoutubePlaylistSyncService
             emission.YoutubePlaylistId = playlistId;
             emission.LatestVideoId = latestVideo.VideoId;
             emission.YoutubeUrl = $"https://www.youtube.com/watch?v={latestVideo.VideoId}";
-            emission.ThumbnailUrl = $"https://i.ytimg.com/vi/{latestVideo.VideoId}/maxresdefault.jpg";
+            if (string.IsNullOrWhiteSpace(emission.ThumbnailUrl))
+            {
+                emission.ThumbnailUrl = $"https://i.ytimg.com/vi/{latestVideo.VideoId}/maxresdefault.jpg";
+            }
             emission.LastSyncedAt = DateTime.UtcNow;
             emission.UpdatedAt = DateTime.UtcNow;
             synchronizedCount++;
