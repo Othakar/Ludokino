@@ -6,6 +6,7 @@ public interface IArticleService
 {
     Task<List<ArticleSummaryDto>> GetPublishedAsync(int page = 1, int pageSize = 12);
     Task<List<ArticleSummaryDto>> GetFeaturedAsync();
+    Task<ArticleDto?> GetByIdAsync(int id, bool includeDrafts = false);
     Task<ArticleDto?> GetBySlugAsync(string slug, bool includeDrafts = false);
     Task<List<ArticleSummaryDto>> GetDraftsAsync();
     Task<ArticleDto> CreateAsync(CreateArticleRequest request);

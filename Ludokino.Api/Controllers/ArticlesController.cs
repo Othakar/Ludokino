@@ -30,6 +30,19 @@ public class ArticlesController : ControllerBase
         return Ok(articles);
     }
 
+    [Authorize(Roles = "Admin,Redacteur")]
+    [HttpGet("id/{id:int}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var article = await _articleService.GetByIdAsync(id, includeDrafts: true);
+        if (article is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(article);
+    }
+
     [HttpGet("{slug}")]
     public async Task<IActionResult> GetBySlug(string slug)
     {
