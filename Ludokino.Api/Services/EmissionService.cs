@@ -20,7 +20,8 @@ public class EmissionService : IEmissionService
     {
         return await _context.Emissions
             .AsNoTracking()
-            .OrderBy(e => e.Name)
+            .OrderByDescending(e => e.LastSyncedAt ?? DateTime.MinValue)
+            .ThenBy(e => e.Name)
             .Select(e => Map(e))
             .ToListAsync();
     }
@@ -30,7 +31,8 @@ public class EmissionService : IEmissionService
         return await _context.Emissions
             .AsNoTracking()
             .Where(e => e.IsFeatured)
-            .OrderBy(e => e.Name)
+            .OrderByDescending(e => e.LastSyncedAt ?? DateTime.MinValue)
+            .ThenBy(e => e.Name)
             .Select(e => Map(e))
             .ToListAsync();
     }

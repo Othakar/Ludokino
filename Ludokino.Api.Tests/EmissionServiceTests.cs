@@ -52,6 +52,32 @@ public class EmissionServiceTests
     }
 
     [Fact]
+    public async Task GetAllAsync_OrdersEmissionsByLatestSynchronization()
+    {
+        await using var context = TestDbContextFactory.CreateInMemory();
+        context.Emissions.AddRange(
+            new Emission
+            {
+                Name = "Ancienne playlist",
+                Slug = "ancienne-playlist",
+                YoutubeUrl = "https://youtu.be/old",
+                LastSyncedAt = DateTime.UtcNow.AddDays(-1)
+            },
+            new Emission
+            {
+                Name = "Playlist récente",
+                Slug = "playlist-recente",
+                YoutubeUrl = "https://youtu.be/recent",
+                LastSyncedAt = DateTime.UtcNow
+            });
+        await context.SaveChangesAsync();
+
+        var emissions = await new EmissionService(context).GetAllAsync();
+
+        Assert.Equal(["Playlist récente", "Ancienne playlist"], emissions.Select(emission => emission.Name));
+    }
+
+    [Fact]
     public async Task SynchronizeAsync_StoresThumbnailWhenItIsMissing()
     {
         await using var context = TestDbContextFactory.CreateInMemory();
