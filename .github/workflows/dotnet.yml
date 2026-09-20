@@ -1,0 +1,36 @@
+name: .NET API
+
+on:
+  push:
+    branches:
+      - main
+      - "feature/**"
+      - "bugfix/**"
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Installer .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restaurer les dépendances
+        run: dotnet restore Ludokino.sln
+
+      - name: Compiler la solution
+        run: dotnet build Ludokino.sln --configuration Release --no-restore
+
+      - name: Exécuter les tests
+        run: dotnet test Ludokino.sln --configuration Release --no-build --verbosity normal
