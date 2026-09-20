@@ -2,6 +2,10 @@ namespace Ludokino.Api.Security;
 
 public static class StartupSecurityValidator
 {
+    private const string DevelopmentSecretKey = "Ludokino-Development-Secret-Key-1234567890";
+    private const string DevelopmentIssuer = "LudokinoApi";
+    private const string DevelopmentAudience = "LudokinoClient";
+
     public static string[] GetCorsOrigins(IConfiguration configuration, IHostEnvironment environment)
     {
         var configuredOrigins = configuration
@@ -32,14 +36,29 @@ public static class StartupSecurityValidator
 
     public static JwtConfiguration GetJwtConfiguration(IConfiguration configuration, IHostEnvironment environment)
     {
-        try
+        var jwtSettings = configuration.GetSection("JwtSettings");
+        var secretKey = jwtSettings["SecretKey"]?.Trim();
+        var issuer = jwtSettings["Issuer"]?.Trim();
+        var audience = jwtSettings["Audience"]?.Trim();
+
+        if (string.IsNullOrWhiteSpace(secretKey) ||
+            string.IsNullOrWhiteSpace(issuer) ||
+            string.IsNullOrWhiteSpace(audience))
         {
-            return GetJwtConfiguration(configuration);
+            if (!environment.IsProduction())
+            {
+                return new JwtConfiguration(DevelopmentSecretKey, DevelopmentIssuer, DevelopmentAudience);
+            }
+
+            throw new InvalidOperationException("JwtSettings (SecretKey, Issuer, Audience) est obligatoire en production.");
         }
-        catch (InvalidOperationException ex) when (environment.IsProduction())
+
+        if (secretKey.Length < 32)
         {
-            throw new InvalidOperationException($"Configuration JWT invalide en production: {ex.Message}", ex);
+            throw new InvalidOperationException("JwtSettings:SecretKey doit contenir au moins 32 caractères.");
         }
+
+        return new JwtConfiguration(secretKey, issuer, audience);
     }
 
     public static JwtConfiguration GetJwtConfiguration(IConfiguration configuration)

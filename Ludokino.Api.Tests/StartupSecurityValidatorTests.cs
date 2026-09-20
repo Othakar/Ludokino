@@ -58,6 +58,19 @@ public class StartupSecurityValidatorTests
     }
 
     [Fact]
+    public void GetJwtConfiguration_InDevelopment_WithMissingValues_ReturnsDefaults()
+    {
+        var configuration = new ConfigurationBuilder().Build();
+        var environment = new FakeHostEnvironment { EnvironmentName = Environments.Development };
+
+        var jwt = StartupSecurityValidator.GetJwtConfiguration(configuration, environment);
+
+        Assert.Equal("LudokinoApi", jwt.Issuer);
+        Assert.Equal("LudokinoClient", jwt.Audience);
+        Assert.True(jwt.SecretKey.Length >= 32);
+    }
+
+    [Fact]
     public void GetJwtConfiguration_WithShortSecret_Throws()
     {
         var configuration = new ConfigurationBuilder()

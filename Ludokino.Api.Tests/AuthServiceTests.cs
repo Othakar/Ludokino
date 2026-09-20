@@ -2,6 +2,8 @@ using Ludokino.Api.DTOs.Auth;
 using Ludokino.Api.Models;
 using Ludokino.Api.Services;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using Xunit;
 
 namespace Ludokino.Api.Tests;
@@ -26,7 +28,7 @@ public class AuthServiceTests
         });
         await context.SaveChangesAsync();
 
-        var service = new AuthService(context, CreateConfiguration());
+        var service = new AuthService(context, CreateConfiguration(), CreateEnvironment());
         var response = await service.LoginAsync(new LoginRequest
         {
             Email = "admin@test.local",
@@ -57,7 +59,7 @@ public class AuthServiceTests
         });
         await context.SaveChangesAsync();
 
-        var service = new AuthService(context, CreateConfiguration());
+        var service = new AuthService(context, CreateConfiguration(), CreateEnvironment());
         var response = await service.LoginAsync(new LoginRequest
         {
             Email = "admin@test.local",
@@ -77,5 +79,18 @@ public class AuthServiceTests
                 ["JwtSettings:Audience"] = "TestAudience"
             })
             .Build();
+    }
+
+    private static IHostEnvironment CreateEnvironment()
+    {
+        return new TestHostEnvironment { EnvironmentName = Environments.Development };
+    }
+
+    private sealed class TestHostEnvironment : IHostEnvironment
+    {
+        public string EnvironmentName { get; set; } = Environments.Production;
+        public string ApplicationName { get; set; } = "Ludokino.Api.Tests";
+        public string ContentRootPath { get; set; } = "/";
+        public IFileProvider ContentRootFileProvider { get; set; } = new NullFileProvider();
     }
 }

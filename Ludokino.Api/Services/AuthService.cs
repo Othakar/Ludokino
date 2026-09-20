@@ -15,11 +15,13 @@ public class AuthService : IAuthService
 {
     private readonly AppDbContext _context;
     private readonly IConfiguration _configuration;
+    private readonly IHostEnvironment _environment;
 
-    public AuthService(AppDbContext context, IConfiguration configuration)
+    public AuthService(AppDbContext context, IConfiguration configuration, IHostEnvironment environment)
     {
         _context = context;
         _configuration = configuration;
+        _environment = environment;
     }
 
     public async Task<LoginResponse?> LoginAsync(LoginRequest request)
@@ -88,7 +90,7 @@ public class AuthService : IAuthService
 
     private string GenerateJwtToken(Ludokino.Api.Models.User user)
     {
-        var jwtConfiguration = StartupSecurityValidator.GetJwtConfiguration(_configuration);
+        var jwtConfiguration = StartupSecurityValidator.GetJwtConfiguration(_configuration, _environment);
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(jwtConfiguration.SecretKey);

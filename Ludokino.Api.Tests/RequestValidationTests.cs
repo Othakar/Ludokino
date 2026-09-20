@@ -55,6 +55,20 @@ public class RequestValidationTests
         Assert.True(isValid);
     }
 
+    [Fact]
+    public void UpdateArticleRequest_WithWhitespaceImageUrl_ShouldFailValidation()
+    {
+        var request = new UpdateArticleRequest
+        {
+            ImageUrls = ["   "]
+        };
+
+        var isValid = Validate(request, out var results);
+
+        Assert.False(isValid);
+        Assert.Contains(results, result => result.MemberNames.Contains(nameof(UpdateArticleRequest.ImageUrls)));
+    }
+
     private static bool Validate(object model, out List<ValidationResult> results)
     {
         var context = new ValidationContext(model);
