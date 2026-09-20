@@ -43,11 +43,27 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ludokino-web/package-lock.json
+
       - name: Restaurer les dépendances
         run: dotnet restore Ludokino.sln
+
+      - name: Installer les dépendances frontend
+        run: npm --prefix ludokino-web ci
 
       - name: Compiler la solution
         run: dotnet build Ludokino.sln --configuration Release --no-restore
 
       - name: Exécuter les tests
         run: dotnet test Ludokino.sln --configuration Release --no-build --verbosity normal
+
+      - name: Vérifier le lint frontend
+        run: npm --prefix ludokino-web run lint
+
+      - name: Compiler le frontend
+        run: npm --prefix ludokino-web run build

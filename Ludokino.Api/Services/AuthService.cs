@@ -88,9 +88,21 @@ public class AuthService : IAuthService
     private string GenerateJwtToken(Ludokino.Api.Models.User user)
     {
         var jwtSettings = _configuration.GetSection("JwtSettings");
-        var secretKey = jwtSettings["SecretKey"] ?? "Ludokino-Development-Secret-Key-123456789";
-        var issuer = jwtSettings["Issuer"] ?? "LudokinoApi";
-        var audience = jwtSettings["Audience"] ?? "LudokinoClient";
+        var secretKey = jwtSettings["SecretKey"]?.Trim();
+        var issuer = jwtSettings["Issuer"]?.Trim();
+        var audience = jwtSettings["Audience"]?.Trim();
+
+        if (string.IsNullOrWhiteSpace(secretKey) ||
+            string.IsNullOrWhiteSpace(issuer) ||
+            string.IsNullOrWhiteSpace(audience))
+        {
+            throw new InvalidOperationException("JwtSettings (SecretKey, Issuer, Audience) doit être configuré.");
+        }
+
+        if (secretKey.Length < 32)
+        {
+            throw new InvalidOperationException("JwtSettings:SecretKey doit contenir au moins 32 caractères.");
+        }
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(secretKey);

@@ -116,3 +116,9 @@ git push -u origin feature/nom-de-la-fonctionnalite
 ```
 
 La CI `build-and-test` doit réussir avant la fusion. Les branches fusionnées sont supprimées automatiquement.
+
+## Gouvernance architecture et sécurité
+
+La checklist PR architecture/sécurité est obligatoire pour chaque modification via le template `.github/pull_request_template.md`.
+
+Les critères d'acceptation et la revue périodique sont documentés dans `docs/architecture-security-governance.md`.
