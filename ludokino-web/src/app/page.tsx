@@ -28,6 +28,52 @@ const articles = [
   ["8 AOÛT 2026 À 18H30", "YOSHIKI ET KYARY PAMYU PAMYU", "LUDOKINO au plus près des grands artistes japonais à Japan Expo 2026."],
 ];
 
+type BlueskyFeedItem = {
+  reason?: unknown;
+  post?: {
+    author?: { handle?: string };
+    uri?: string;
+    record?: { text?: string };
+  };
+};
+
+type LatestPost = {
+  text: string;
+  url: string;
+};
+
+async function getLatestBlueskyPost(): Promise<LatestPost> {
+  const fallback = {
+    text: "Suivez les dernières actualités de LUDOKINO sur Bluesky",
+    url: "https://bsky.app/profile/ludokino.net",
+  };
+
+  try {
+    const response = await fetch(
+      "https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed?actor=ludokino.net&limit=20",
+      { next: { revalidate: 300 } },
+    );
+
+    if (!response.ok) return fallback;
+
+    const data = (await response.json()) as { feed?: BlueskyFeedItem[] };
+    const post = data.feed?.find(
+      (item) => item.post?.author?.handle === "ludokino.net" && !item.reason,
+    )?.post;
+    const text = post?.record?.text?.trim();
+    const rkey = post?.uri?.split("/").pop();
+
+    if (!text || !rkey) return fallback;
+
+    return {
+      text,
+      url: `https://bsky.app/profile/ludokino.net/post/${rkey}`,
+    };
+  } catch {
+    return fallback;
+  }
+}
+
 type BrandIconData = { path: string };
 
 function BrandIcon({ icon, size = 22 }: { icon: BrandIconData; size?: number }) {
@@ -78,17 +124,29 @@ function Navigation() {
         <a href="https://bsky.app/profile/ludokino.net" aria-label="Bluesky" title="Bluesky"><BrandIcon icon={siBluesky} /></a>
         <a href="https://www.twitch.tv/ludokino" aria-label="Twitch" title="Twitch"><BrandIcon icon={siTwitch} /></a>
         <a href="https://www.youtube.com/@ldkino" aria-label="YouTube" title="YouTube"><BrandIcon icon={siYoutube} /></a>
+        <a href="https://www.tiktok.com/@ludokino" aria-label="TikTok" title="TikTok"><BrandIcon icon={siTiktok} /></a>
+        <a href="https://x.com/ludokino" aria-label="X" title="X"><BrandIcon icon={siX} /></a>
       </div>
     </nav>
   );
 }
 
-export default function Home() {
+export default async function Home() {
+  const latestPost = await getLatestBlueskyPost();
+
   return (
     <div>
       <div className="scanline" />
       <div className="crt-overlay" aria-hidden="true" />
       <Navigation />
+      <div className="news-ticker" aria-label="Actualités Ludokino">
+        <span className="ticker-badge pixel-font"><BrandIcon icon={siBluesky} size={16} />BSKY</span>
+        <div className="ticker-track mono-font">
+          <a className="ticker-copy" href={latestPost.url} target="_blank" rel="noreferrer">{latestPost.text}&nbsp; • &nbsp;</a>
+          <span className="ticker-gap" aria-hidden="true" />
+          <a className="ticker-copy" href={latestPost.url} target="_blank" rel="noreferrer" aria-hidden="true">{latestPost.text}&nbsp; • &nbsp;</a>
+        </div>
+      </div>
       <main className="page-shell">
         <div className="home-grid">
           <div className="stack">

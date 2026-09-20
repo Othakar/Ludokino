@@ -194,6 +194,56 @@ p {
   transition: color 150ms ease, transform 150ms ease;
 }
 
+.news-ticker {
+  display: flex;
+  width: min(1240px, calc(100% - 64px));
+  height: 50px;
+  margin: 24px auto 8px;
+  overflow: hidden;
+  color: var(--yellow);
+  background: rgba(42, 52, 84, 0.92);
+  border: 2px solid var(--border);
+  border-radius: 7px;
+  box-shadow: 3px 3px 0 rgba(17, 21, 34, 0.65);
+}
+
+.ticker-badge {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 7px;
+  padding: 0 17px;
+  color: #172033;
+  background: var(--yellow);
+  font-size: 1rem;
+}
+
+.ticker-track {
+  display: flex;
+  align-items: center;
+  min-width: max-content;
+  font-size: 0.76rem;
+  animation: ticker-scroll 12s linear infinite;
+}
+
+.ticker-copy {
+  display: block;
+  min-width: max-content;
+  padding-left: 16px;
+  white-space: nowrap;
+}
+
+.ticker-gap {
+  display: block;
+  flex: 0 0 100vw;
+  height: 1px;
+}
+
+@keyframes ticker-scroll {
+  0%, 16.666% { transform: translateX(0); }
+  to { transform: translateX(calc(-50% - 50vw)); }
+}
+
 .brand-icon {
   display: block;
   fill: currentColor;
@@ -534,6 +584,16 @@ p {
   .page-shell {
     width: min(100% - 20px, 1320px);
     padding-top: 20px;
+  }
+
+  .news-ticker {
+    width: calc(100% - 20px);
+    height: 42px;
+    margin-top: 14px;
+  }
+
+  .ticker-badge {
+    padding-inline: 11px;
   }
 
   .split-grid {
