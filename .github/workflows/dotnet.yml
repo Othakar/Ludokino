@@ -16,6 +16,23 @@ permissions:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    env:
+      LUDOKINO_TEST_CONNECTION_STRING: Host=localhost;Database=ludokino_test;Username=postgres;Password=postgres
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: ludokino_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d ludokino_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Récupérer le dépôt
