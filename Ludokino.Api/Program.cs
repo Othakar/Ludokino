@@ -1,4 +1,5 @@
 using Ludokino.Api.Data;
+using Ludokino.Api.Middleware;
 using Ludokino.Api.Services;
 using Ludokino.Api.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -48,6 +49,8 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+app.UseMiddleware<SecurityHeadersMiddleware>();
 
 using (var scope = app.Services.CreateScope())
 {
