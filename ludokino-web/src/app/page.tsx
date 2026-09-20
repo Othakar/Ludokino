@@ -156,6 +156,6 @@ export default function Home() {
           <a href="#mentions-legales">Mentions légales</a>
         </p>
       </footer>
-    </div>
-  );
-}
+          <a href="https://bsky.app/profile/ludokino.net" aria-label="Bluesky" title="Bluesky"><BrandIcon icon={siBluesky} /></a>
+          <a href="https://www.twitch.tv/ludokino" aria-label="Twitch" title="Twitch"><BrandIcon icon={siTwitch} /></a>
+          <a href="https://www.youtube.com/@ldkino" aria-label="YouTube" title="YouTube"><BrandIcon icon={siYoutube} /></a>
